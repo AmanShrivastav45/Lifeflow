@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background-primary: #09090B;
+  --placeholder: #68686F;
+  --editor-background-color: #212121; 
+  --validation: #303030;
+  --success: rgb(22 163 74);
+  --primary-headings: #FAFAFA;
+  --primary-paragraphs: #7B7B82;
+}
+
+.CodeMirror *{
+  font-family:'Fira Code';
+  font-weight: 100;
+  font-size: 18px;
+}
+
+html {
+  --scrollbarBG: #09090b;
+  --thumbBG: #1e1e1e;
+}
+body::-webkit-scrollbar {
+  width: 4px;
+}
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+}
+/* body::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+  } */
+  body::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG) ;
+    border-radius: 2px;
+    border: 1px solid var(--scrollbarBG);
+    
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    border-radius: 5px;
+}
+
+#outline {
+  stroke-dasharray: 2.42776657104492px, 242.776657104492px;
+  stroke-dashoffset: 0;
+  animation: anim 1.6s linear infinite;
+  color: aqua;
+}
+
+/* input[type="checkbox"] {
+  appearance: none;
+  border: 1px solid #ccc;
+  border-radius: 50%; 
+  width: 12px;
+  height: 12px;
+  margin: 0 10px 0 0;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #666;
+  border-color: #666;
+} */
+
+@keyframes anim {
+  12.5% {
+    stroke-dasharray: 34.00473200062888px, 242.776657104492px;
+    stroke-dashoffset: -26.70543262149412px;
+  }
+  43.75% {
+    stroke-dasharray: 84.9718299865722px, 242.776657104492px;
+    stroke-dashoffset: -84.9718299865722px;
+  }
+  100% {
+    stroke-dasharray: 2.42776657104492px, 242.776657104492px;
+    stroke-dashoffset: -240.34889053344708px;
+  }
+}
+
+.fade-text {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0;
+}
