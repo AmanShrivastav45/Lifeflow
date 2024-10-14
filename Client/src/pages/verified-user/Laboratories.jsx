@@ -4,7 +4,7 @@ import { NavLink, Link, useParams } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useAuthStore } from "../../store/auth";
 
-const Navigation = () => {
+const Laboratories = () => {
   const { user, logout } = useAuthStore();
   const val = JSON.parse(localStorage.getItem("user")) || null;
   const recieverId = useParams().recieverId || null;
@@ -40,14 +40,14 @@ const Navigation = () => {
               LIFEFLOW
             </h1>
             <div className="flex ml-8">
-            <NavLink to="/" className={getNavLinkClass}>
-                Home
-              </NavLink>
-              <NavLink to={`/user/${recieverId}/bloodbank`} className={getNavLinkClass}>
+              <NavLink to={`/user/${recieverId}`} className={getNavLinkClass}>
                 Blood Bank
               </NavLink>
               <NavLink to={`/user/${recieverId}/hospitals`} className={getNavLinkClass}>
                 Hospitals
+              </NavLink>
+              <NavLink to={`/user/${recieverId}/labs`} className={getNavLinkClass}>
+                Laboratories
               </NavLink>
             </div>
           </div>
@@ -91,4 +91,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default Laboratories;

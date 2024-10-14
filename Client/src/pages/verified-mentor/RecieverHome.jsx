@@ -1,203 +1,59 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Navigation from "../../components/user/Navigation";
+import React, { useEffect, useState } from "react";
+import NewLoader from "../../components/NewLoader.jsx";
+import "../../fonts/stylesheet.css";
+import Navigation from "../../components/user/Navigation.jsx";
+import logo from "../../assets/logo.png";
+import FloatingShape from "../../style/FloatingShapes.jsx";
 
 const RecieverHome = () => {
-  const [donations, setDonations] = useState([]);
-  const [filteredDonations, setFilteredDonations] = useState([]);
-  const [bloodGroup, setBloodGroup] = useState("");
-  const [city, setCity] = useState("");
-  const [donationType, setDonationType] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // Loader state
+  const quotes = [
+    "Blood donation is the gift of life. Your simple act can save lives and inspire hope.",
+    "Every blood donor is a hero, silently saving lives and giving patients another chance at life.",
+    "One donation can save three lives. It's a small act of kindness with massive impact.",
+    "Donating blood costs nothing, but it can mean everything to someone who desperately needs it.",
+    "Blood donors are lifesavers. Their generosity helps hospitals, patients, and families in times of crisis.",
+  ];
 
   useEffect(() => {
-    const fetchDonations = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5050/lifeflow/auth/donors/donations`
-        );
-        setDonations(response.data);
-        setFilteredDonations(response.data); // Initially display all donations
-        setLoading(false);
-      } catch (error) {
-        setError("Error fetching donations");
-        setLoading(false);
-      }
+    // Simulate loading time (you can remove this if the content is fetched from API)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // Set a 3-second loader
+
+    // Quote change logic
+    const quoteInterval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
+        setFade(true);
+      }, 1000);
+    }, 5000);
+
+    return () => {
+      clearInterval(quoteInterval);
+      clearTimeout(timer);
     };
-    fetchDonations();
   }, []);
 
-  useEffect(() => {
-    const fetchFilteredDonations = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5050/lifeflow/auth/donors/donations/filter`,
-          {
-            params: {
-              bloodGroup,
-              city,
-              donationType,
-            },
-          }
-        );
-        setFilteredDonations(response.data);
-      } catch (error) {
-        setError("Error filtering donations");
-      }
-    };
-    fetchFilteredDonations();
-  }, [bloodGroup, city, donationType]);
-
-  if (loading) {
-    return <p>Loading donations...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
   return (
-    <div className="Geist h-screen relative overflow-hidden w-full flex flex-col items-center justify-start bg-[#0a0a0a]">
-      <Navigation/>
-      <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex mt-20">
-        {/* Filters Section */}
-        <div className="hidden lg:block lg:w-[25%] xl:w-[20%] h-full flex-col text-[#868686] text-md p-3 overflow-y-auto">
-          <ul className="space-y-2 pl-2 mt-2">
-            <h1 className="text-xl Geist-semibold text-gray-200">Filters</h1>
-            <div>
-              <h1 className="text-lg">Blood Group</h1>
-              <ul className="text-md mb-6">
-                <li className="my-2">
-                  <button
-                    className="bg-blue-500 text-white p-2"
-                    onClick={() => setBloodGroup("")}
-                  >
-                    All
-                  </button>
-                </li>
-                <li className="my-2">
-                  <button
-                    className="bg-red-500 text-white p-2"
-                    onClick={() => setBloodGroup("")}
-                  >
-                    Uncheck All
-                  </button>
-                </li>
-                {["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map((group) => (
-                  <li className="my-2" key={group}>
-                    <input
-                      type="checkbox"
-                      id={`blood-group-${group}`}
-                      name="bloodGroup"
-                      value={group}
-                      onChange={(e) => setBloodGroup(e.target.checked ? group : "")}
-                    />
-                    <label htmlFor={`blood-group-${group}`} className="ml-2">
-                      {group}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h1 className="text-lg">City</h1>
-              <ul className="text-md mb-6">
-                <li className="my-2">
-                  <button
-                    className="bg-blue-500 text-white p-2"
-                    onClick={() => setCity("")}
-                  >
-                    All
-                  </button>
-                </li>
-                <li className="my-2">
-                  <button
-                    className="bg-red-500 text-white p-2"
-                    onClick={() => setCity("")}
-                  >
-                    Uncheck All
-                  </button>
-                </li>
-                {["Borivali", "Andheri", "Bandra", "Bhayandar", "Vasai", "Virar"].map((city) => (
-                  <li className="my-2" key={city}>
-                    <input
-                      type="checkbox"
-                      id={`city-${city}`}
-                      name="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.checked ? city : "")}
-                    />
-                    <label htmlFor={`city-${city}`} className="ml-2 ">
-                      {city}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h1 className="text-lg">Donation Type</h1>
-              <ul className="text-md mb-6">
-                <li className="my-2">
-                  <button
-                    className="bg-blue-500 text-white p-2"
-                    onClick={() => setDonationType("")}
-                  >
-                    All
-                  </button>
-                </li>
-                <li className="my-2">
-                  <button
-                    className="bg-red-500 text-white p-2"
-                    onClick={() => setDonationType("")}
-                  >
-                    Uncheck All
-                  </button>
-                </li>
-                {["Whole Blood", "Plasma"].map((type) => (
-                  <li className="my-2" key={type}>
-                    <input
-                      type="checkbox"
-                      id={`donation-type-${type}`}
-                      name="donationType"
-                      value={type }
-                      onChange={(e) => setDonationType(e.target.checked ? type : "")}
-                    />
-                    <label htmlFor={`donation-type-${type}`} className="ml-2">
-                      {type}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </ul>
-        </div>
+    <div className="bg-black w-full overflow-hidden h-screen relative flex flex-col items-center justify-center Geist">
+      <Navigation />
+      <FloatingShape size="w-64 h-64" top="-5%" left="10%" delay={0} />
+      <FloatingShape size="w-48 h-48" top="70%" left="80%" delay={3} />
+      <FloatingShape size="w-40 h-40" top="40%" left="-10%" delay={1} />
 
-        {/* Donation List Section */}
-        <div className="p-4 h-screen w-full md:w-[75%] xl:w-[55%] text-white Geist px-6 overflow-y-auto hide-scrollbar">
-          {filteredDonations.length === 0 ? (
-            <p>No donation opportunities found.</p>
-          ) : (
-            filteredDonations.map((donation) => (
-              <div key={donation._id} className="border p-4 mb-4">
-                <h2 className="text-xl font-bold">{donation.city} Donation</h2>
-                <p>
-                  <strong>Blood Type:</strong> {donation.bloodGroup}
-                </p>
-                <p>
-                  <strong>City:</strong> {donation.city}, {donation.pincode}
-                </p>
-                <p>
-                  <strong>Address:</strong> {donation.address}
-                </p>
-                <p>
-                  <strong>Donation Type:</strong> {donation.donationType}
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+      <img src={logo} className="h-72  mb-8 opacity-25" />
+      <p
+        className={`md:text-base lg:text-xl px-8 sm:px-2 mt-3 text-sm Geist text-center text-gray-300 fade-text ${
+          fade ? "" : "fade-out"
+        }`}
+      >
+        {quotes[quoteIndex]}
+      </p>
+      {isLoading && <NewLoader />}
     </div>
   );
 };

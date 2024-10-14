@@ -4,10 +4,10 @@ import { NavLink, Link, useParams } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useAuthStore } from "../../store/auth";
 
-const Navigation = () => {
+const Navigation2 = () => {
   const { user, logout } = useAuthStore();
   const val = JSON.parse(localStorage.getItem("user")) || null;
-  const recieverId = useParams().recieverId || null;
+  const donorId = useParams().donorId || null;
   const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
 
   const handleLogout = () => {
@@ -40,13 +40,10 @@ const Navigation = () => {
               LIFEFLOW
             </h1>
             <div className="flex ml-8">
-            <NavLink to="/" className={getNavLinkClass}>
-                Home
-              </NavLink>
-              <NavLink to={`/user/${recieverId}/bloodbank`} className={getNavLinkClass}>
+              <NavLink to={`/donor/${donorId}/bloodbank`} className={getNavLinkClass}>
                 Blood Bank
               </NavLink>
-              <NavLink to={`/user/${recieverId}/hospitals`} className={getNavLinkClass}>
+              <NavLink to={`/donor/${donorId}/hospitals`} className={getNavLinkClass}>
                 Hospitals
               </NavLink>
             </div>
@@ -91,4 +88,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default Navigation2;

@@ -60,7 +60,7 @@ const DonorDashboard = () => {
   }, [donorId]);
 
   return (
-    <div className="bg-[#09090b] w-full min-h-screen h-screen pt-24 flex flex-col items-center Geist">
+    <div className="bg-[#09090b] w-full min-h-screen overflow-hidden h-screen pt-24 flex flex-col items-center Geist">
       <Navigation />
       <button style={{ zIndex: 1100 }} onClick={toggleCreateDonation}>
         <FaCirclePlus className="text-yellow-500 hover:text-yellow-500 text-5xl fixed bottom-10 md:bottom-16 right-10 md:right-16 transition-all" />
@@ -72,7 +72,7 @@ const DonorDashboard = () => {
           onCancel={() => setCreateDonation(false)}
         />
       )}
-      <div className="w-full text-white h-[95%] xl:w-[1280px] 2xl:w-[1440px] flex flex-col justify-start p-6 pt-0">
+      <div className="w-full text-white h-[95%] xl:w-[1280px] 2xl:w-[1440px] overflow-y-auto flex flex-col justify-start p-6 pt-0">
         {loading && <div className="text-white">Loading donations...</div>}
         {donations.length > 0 ? (
           <div className="mt-4 w-full">

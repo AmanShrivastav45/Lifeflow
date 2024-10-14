@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import quizData from "../collections/quizData.json"; // Import your quiz data JSON file
+import React, { useState } from "react";// Import your quiz data JSON file
 import "../fonts/stylesheet.css";
 
 function Test() {

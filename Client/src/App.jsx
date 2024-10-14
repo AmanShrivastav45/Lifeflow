@@ -10,19 +10,10 @@ import Loader from "./components/Loader";
 import { useAuthStore } from "./store/auth.js";
 import Home from "./pages/Home.jsx";
 import UserDashboard from "./pages/verified-user/DonorDashboard.jsx";
-import MentorDashboard from "./pages/verified-mentor/MentorDashboard.jsx";
-import Learn from "./components/user/Learn.jsx";
-import Practice from "./components/user/Practice.jsx";
-import Roadmaps from "./components/user/Roadmaps.jsx";
-import IDE from "./components/user/IDE.jsx";
-import Alumni from "./components/user/Alumni.jsx";
-import Openings from "./components/user/Openings.jsx";
-import Coderoom from "./components/user/Coderoom.jsx";
-import Overview from "./components/mentor/Overview.jsx";
-import MentorHome from "./pages/verified-mentor/RecieverHome.jsx";
-import ClassDashboard from "./pages/verified-user/ClassDashboard.jsx";
-import TestPage from "./pages/verified-user/TestPage.jsx";
-import Details from "./pages/authentication/Details.jsx";
+import RecieverHome from "./pages/verified-mentor/RecieverHome.jsx";
+import BloodBank from "./pages/verified-user/BloodBank.jsx";
+import Hospitals from "./pages/verified-user/Hospitals.jsx";
+import Laboratories from "./pages/verified-user/Laboratories.jsx";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -77,7 +68,23 @@ function App() {
           path="/user/:recieverId"
           element={
             <ProtectedRoute>
-              <MentorHome />
+              <RecieverHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:recieverId/bloodbank"
+          element={
+            <ProtectedRoute>
+              <BloodBank />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:recieverId/hospitals"
+          element={
+            <ProtectedRoute>
+              <Hospitals />
             </ProtectedRoute>
           }
         />
@@ -106,8 +113,6 @@ function App() {
           }
         />
         <Route path="/verify-email" element={<Verification />} />
-        <Route path="/user/:userId/:classId/test/:testId" element={<TestPage />} />
-
         <Route
           path="/forgot-password"
           element={
