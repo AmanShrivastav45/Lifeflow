@@ -49,7 +49,6 @@ const BloodBank = () => {
       ? "text-white p-3 flex items-center justify-center h-full rounded-[4px]"
       : "hover:text-white p-3 flex items-center justify-center h-full rounded-[4px] text-[#868686]";
 
-  // Fetch all donations on component mount
   useEffect(() => {
     const fetchDonations = async () => {
       try {
@@ -57,7 +56,7 @@ const BloodBank = () => {
           `http://localhost:5050/lifeflow/auth/donors/donations`
         );
         setDonations(response.data);
-        setFilteredDonations(response.data); // Initially display all donations
+        setFilteredDonations(response.data);
         setLoading(false);
       } catch (error) {
         setError("Error fetching donations");
@@ -78,7 +77,7 @@ const BloodBank = () => {
               ? donationType.map(
                   (type) =>
                     type.charAt(0).toLowerCase() + type.slice(1).toLowerCase()
-                ) // Capitalize each type
+                )
               : undefined,
         };
 

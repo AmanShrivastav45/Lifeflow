@@ -85,10 +85,8 @@ const DonorDashboard = () => {
 
   return (
     <div className="bg-[#09090b] w-full min-h-screen overflow-hidden h-screen pt-24 flex flex-col items-center Geist">
-      <div
-        style={{ zIndex: "1000" }}
-        className="Geist h-20 bg-black top-0 w-full fixed flex justify-center border-b border-[#1a1a1a]"
-      >
+      <div style={{ zIndex: "1000" }}
+        className="Geist h-20 bg-black top-0 w-full fixed flex justify-center border-b border-[#1a1a1a]">
         <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex flex-col">
           <div className="w-full h-full flex items-center justify-between text-md p-2">
             <div className="flex items-center">

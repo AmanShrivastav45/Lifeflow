@@ -296,7 +296,6 @@ const LabHome = () => {
           </div>
 
           <div className="h-full w-[50%] flex flex-col ml-4">
-            
             {selectedReport && (
               <div className=" p-4 bg-[#1e1e1e] rounded-md">
                 <h2 className="text-lg font-bold mb-2">
