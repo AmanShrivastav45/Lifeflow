@@ -31,14 +31,6 @@ const DonationCard = ({
         <div className="text-sm text-gray-400">City: {city || "N/A"}</div>
         <div className="text-sm text-gray-400">Pincode: {pincode || "N/A"}</div>
       </div>
-      <div className="flex items-center justify-between mt-2">
-        <Link
-          to={`/user/donor/${id}`} // Adjust the link as needed for your routing
-          className="px-3 bg-green-700 text-white rounded-[5px] py-1"
-        >
-          View Details
-        </Link>
-      </div>
     </div>
   );
 };

@@ -20,7 +20,6 @@ const Hospital = ({ name, address, city, bloodGroup, distance }) => {
         </div>
         <div className="flex flex-col items-end">
           <Link
-            to={`/hospitals/${name}`}
             className="h-10 w-[100px] rounded-[5px] bg-purple-600 flex items-center justify-center font-semibold"
           >
             View

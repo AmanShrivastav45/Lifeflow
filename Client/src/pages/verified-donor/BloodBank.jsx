@@ -3,19 +3,23 @@ import axios from "axios";
 import Navigation from "../../components/reciever/Navigation";
 import Donation from "../../components/reciever/Donation";
 import RequestDonation from "../../modals/RequestDonation";
-import toast from "react-hot-toast"
+import toast from "react-hot-toast";
+import { useAuthStore } from "../../store/auth";
+import { useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import logo from "../../assets/logo.png";
 
 const BloodBank = () => {
   const [donations, setDonations] = useState([]);
   const [filteredDonations, setFilteredDonations] = useState([]);
-  const [bloodGroup, setBloodGroup] = useState([]); // Array for multiple selections
-  const [city, setCity] = useState([]); // Array for multiple selections
-  const [donationType, setDonationType] = useState([]); // Array for multiple selections
+  const [bloodGroup, setBloodGroup] = useState([]); 
+  const [city, setCity] = useState([]); 
+  const [donationType, setDonationType] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [showRequestDonation, setShowRequestDonation] = useState(false); // State for modal visibility
-  const [selectedDonation, setSelectedDonation] = useState({}); // State for selected donation
+  const [showRequestDonation, setShowRequestDonation] = useState(false); 
+  const [selectedDonation, setSelectedDonation] = useState({});
 
   const openRequestDonationModal = (donation) => {
     setSelectedDonation(donation);
@@ -25,6 +29,25 @@ const BloodBank = () => {
   const closeRequestDonationModal = () => {
     setShowRequestDonation(false);
   };
+
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const val = JSON.parse(localStorage.getItem("user")) || null;
+  const recieverId = useParams().recieverId || null;
+  const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
+
+  const toggleProfileButton = () => {
+    setIsProfileButtonOpen(!isProfileButtonOpen);
+  };
+
+  const getNavLinkClass = ({ isActive }) =>
+    isActive
+      ? "text-white p-3 flex items-center justify-center h-full rounded-[4px]"
+      : "hover:text-white p-3 flex items-center justify-center h-full rounded-[4px] text-[#868686]";
 
   // Fetch all donations on component mount
   useEffect(() => {
@@ -85,8 +108,74 @@ const BloodBank = () => {
   };
   return (
     <div className="Geist h-screen relative w-full overflow-hidden flex flex-col items-center justify-start bg-black">
-      <Navigation />
-      <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex mt-20" >
+      <div
+        style={{ zIndex: "1000" }}
+        className="Geist h-20 bg-black top-0 w-full fixed flex justify-center border-b border-[#1a1a1a]"
+      >
+        <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex flex-col">
+          <div className="w-full h-full flex items-center justify-between text-md p-2">
+            <div className="flex items-center">
+              <div className="relative w-[60px] flex items-center mx-2">
+                <NavLink to="/" className={getNavLinkClass}>
+                  <img src={logo} className="h-8" alt="logo" />
+                </NavLink>
+              </div>
+              <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
+                MED-EXPERT
+              </h1>
+              <div className="flex ml-8">
+                <NavLink
+                  to={`/user/${recieverId}/bloodbank`}
+                  className={getNavLinkClass}
+                >
+                  Blood Bank
+                </NavLink>
+                <NavLink
+                  to={`/user/${recieverId}/hospitals`}
+                  className={getNavLinkClass}
+                >
+                  Hospitals
+                </NavLink>
+              </div>
+            </div>
+            <div className="flex relative justify-between space-x-4">
+              <button onClick={toggleProfileButton}>
+                <div className="h-7 w-7 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-[50%]"></div>
+              </button>
+              {isProfileButtonOpen && user ? (
+                <div
+                  className="absolute right-0 top-full mt-2 w-48 bg-[#0a0a0a] border border-[#1e1e1e] rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+                  style={{ right: "10px", top: "25px" }}
+                >
+                  <div
+                    className="text-[#68686f]"
+                    role="menu"
+                    aria-orientation="vertical"
+                  >
+                    <div
+                      className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] w-full text-left"
+                      role="menuitem"
+                    >
+                      <span>User: </span>
+                      <span className="Geist text-gray-300">
+                        {user?.firstName || "Unknown User"}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
+                      role="menuitem"
+                    >
+                      Logout Med-Expert
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex mt-20">
         {/* Filters Section */}
         <div className="hidden lg:block lg:w-[25%] xl:w-[20%] h-full  flex-col text-[#868686] text-md p-3 mb-24">
           <ul className="space-y-2 pl-2 mt-2 h-full overflow-y-hidden">
@@ -114,29 +203,6 @@ const BloodBank = () => {
                 )}
               </ul>
             </div>
-            {/* <div>
-              <h1 className="text-lg">City</h1>
-              <ul className="text-md mb-6">
-                {["Borivali", "Andheri", "Bandra", "Bhayandar", "Vasai", "Virar"].map(
-                  (cityName) => (
-                    <li className="my-2" key={cityName}>
-                      <input
-                        type="checkbox"
-                        id={`city-${cityName}`}
-                        name="city"
-                        value={cityName}
-                        onChange={() =>
-                          handleCheckboxChange(setCity, city, cityName)
-                        }
-                      />
-                      <label htmlFor={` city-${cityName}`} className="ml-2 ">
-                        {cityName}
-                      </label>
-                    </li>
-                  )
-                )}
-              </ul>
-            </div> */}
             <div>
               <h1 className="text-lg">Donation Type</h1>
               <ul className="text-md mb-6">
@@ -191,7 +257,7 @@ const BloodBank = () => {
                 donationType={donation.donationType}
                 date={donation.createdAt}
                 postedBy={donation.postedBy}
-                onClick={()=>openRequestDonationModal(donation)}
+                onClick={() => openRequestDonationModal(donation)}
               />
             ))
           )}

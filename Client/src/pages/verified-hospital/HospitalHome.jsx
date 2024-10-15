@@ -19,6 +19,7 @@ const HospitalHome = () => {
   const toggleProfileButton = () => {
     setIsProfileButtonOpen(!isProfileButtonOpen);
   };
+  
   const [bloodGroup, setBloodGroup] = useState("");
   const [quantityInLiters, setQuantityInLiters] = useState("");
   const [bloodBank, setBloodBank] = useState([]); // Initialize as an empty array
