@@ -164,6 +164,7 @@ const AddDonation = ({ donorId, onSuccess, onCancel }) => {
               <option value="Bhayandar">Bhayandar</option>
               <option value="Vasai">Vasai</option>
               <option value="Virar">Virar</option>
+              <option value="Other">Other</option>
             </select>
             <input
               className="Geist border border-[#3a3a3a] caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 h-12 px-4 outline-none text-base text-white rounded-[7px] py-2 resize-none overflow-y-auto w-[50%] ml-2"
@@ -202,18 +203,18 @@ const AddDonation = ({ donorId, onSuccess, onCancel }) => {
           )}
           <div className="w-full flex items-center justify-center">
             <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-600 w-[50%] h-12 mr-2 text-white p-2 rounded hover:bg-blue-700 transition duration-200"
-            >
-              {loading ? "Adding Donation..." : "Add Donation"}
-            </button>
-            <button
               type="button"
               onClick={onCancel}
-              className=" bg-red-600 w-[50%] h-12 ml-2 text-white p-2 rounded hover:bg-red-700 transition duration-200"
+              className=" bg-red-600 w-[50%] h-12 mr-2 text-white p-2 rounded hover:bg-red-700 transition duration-200"
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 w-[50%] h-12 ml-2 text-white p-2 rounded hover:bg-blue-700 transition duration-200"
+            >
+              {loading ? "Adding Donation..." : "Add Donation"}
             </button>
           </div>
         </form>

@@ -12,12 +12,6 @@
   --primary-paragraphs: #7B7B82;
 }
 
-.CodeMirror *{
-  font-family:'Fira Code';
-  font-weight: 100;
-  font-size: 18px;
-}
-
 html {
   --scrollbarBG: #09090b;
   --thumbBG: #1e1e1e;

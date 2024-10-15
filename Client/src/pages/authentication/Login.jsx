@@ -62,33 +62,34 @@ const Login = () => {
             <h1 className="mb-6 text-4xl Geist-semibold text-white">
               Welcome back!
             </h1>
-            <div className=" px-1 mb-4 " style={{ zIndex: 1001 }}>
+            <div className="px-1 mb-4" style={{ zIndex: 1001 }}>
               <div className="relative mb-4 Geist border w-[360px] md:w-[420px] border-[#2A2A2A] bg-[#09090b] outline-none h-12 text-base rounded-[7px] flex">
                 <div
                   className={`absolute transition-all duration-300 ease-in-out ${
-                    selectedRole === "donor" ? "left-0" : "left-[50%]"
-                  } w-[50%] h-full bg-[#1e1e1e] rounded-[6px]`}
-                />
-                <button
-                  onClick={() => toggleRole("donor")}
-                  className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
                     selectedRole === "donor"
-                      ? "text-[#d6d6d6]"
-                      : "text-[#68686F]"
-                  }`}
-                >
-                  Donor
-                </button>
-                <button
-                  onClick={() => toggleRole("reciever")}
-                  className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
-                    selectedRole === "reciever"
-                      ? "text-[#d6d6d6]"
-                      : "text-[#68686F]"
-                  }`}
-                >
-                  Reciever
-                </button>
+                      ? "left-0"
+                      : selectedRole === "receiver"
+                      ? "left-[25%]"
+                      : selectedRole === "hospital"
+                      ? "left-[50%]"
+                      : "left-[75%]"
+                  } w-[25%] h-full bg-[#a33636] rounded-[6px]`}
+                />
+                {["Donor", "Receiver", "Hospital", "Laboratory"].map(
+                  (role, index) => (
+                    <button
+                      key={role}
+                      onClick={() => toggleRole(role.toLowerCase())}
+                      className={`relative z-10 py-2 px-4 rounded-[6px] w-[25%] items-center transition-colors duration-300 ease-in-out ${
+                        selectedRole === role.toLowerCase()
+                          ? "text-[#d6d6d6]"
+                          : "text-[#68686F]"
+                      }`}
+                    >
+                      {role}
+                    </button>
+                  )
+                )}
               </div>
               <input
                 type="email"

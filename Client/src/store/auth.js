@@ -14,7 +14,6 @@ export const useAuthStore = create((set) => ({
   isCheckingAuth: true,
   message: null,
 
-  // Sign up method
   signup: async (
     firstName,
     lastName,
@@ -59,6 +58,49 @@ export const useAuthStore = create((set) => ({
         isLoading: false,
       });
       throw error;
+    }
+  },
+
+healthcareSignup: async (
+    name,
+    email,
+    phone,
+    password,
+    address,
+    city,
+    pincode,
+    selectedRole
+  ) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/healthcare-signup`, {
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+        address: address,
+        selectedRole: selectedRole,
+        city: city,
+        pincode: pincode,
+      });
+      const userData = response.data.hospital; // Adjusted to match the response structure
+      
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("role", selectedRole); // Persist role
+
+      set({
+        user: userData,
+        isAuthenticated: true,
+        isLoading: false,
+        role: selectedRole,
+      });
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Network error occurred. Please try again.",
+        isLoading: false,
+      });
+      throw error; // Optional: If you want to propagate the error further
     }
   },
 

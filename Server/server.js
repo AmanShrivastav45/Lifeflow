@@ -6,6 +6,7 @@ import os from "node:os";
 import cluster from "node:cluster";
 import path from "path"; 
 import { fileURLToPath } from "url"; 
+import bodyParser from "body-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +27,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 

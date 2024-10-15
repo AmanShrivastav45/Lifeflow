@@ -55,9 +55,13 @@ const Verification = () => {
 		  navigate(`/donor/${user._id}`);
 		} else if (role === "reciever") {
 		  navigate(`/user/${user._id}`);
+		} else if(role === "Hospital"){
+			navigate(`/hospital/${user._id}`);
+		} else if (role === "Laboratory"){
+			navigate(`/lab/${user._id}`);
 		}
 		toast.success("Email verified successfully");
-		toast.success("Welcome to Coderoom");
+		toast.success("Welcome to Med-Expert");
 	  } catch (error) {
 		console.log(error);
 	  }
@@ -85,7 +89,7 @@ const Verification = () => {
         </h1>
         <h3 className="text-[15px] mt-2 text-[#7B7B82] tracking-wide">
           Please check your mail! We've sent an OTP to
-          <br />
+          <br/>
           <span className="">{user.email}</span>
         </h3>
         <form onSubmit={handleSubmit} className=" mt-4 flex flex-col items-center justify-center">

@@ -10,62 +10,43 @@ import FloatingShape from "../../style/FloatingShapes.jsx";
 import { useAuthStore } from "../../store/auth.js";
 import "../../fonts/stylesheet.css";
 
-const Signup = () => {
+const HealthCareSignup = () => {
   const navigate = useNavigate();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setname] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
+  const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { signup, error, isLoading } = useAuthStore();
-  const [selectedRole, setSelectedRole] = useState("donor");
+  const { healthcareSignup, error, isLoading } = useAuthStore();
+  const [selectedRole, setSelectedRole] = useState("Hospital");
 
-  const toggleRole = (selectedRole) => {
-    setSelectedRole(selectedRole);
-  };
-
-  const [nameErrorColor, setNameErrorColor] = useState("text-[#303030]");
-  const [nameLengthErrorColor, setNameLengthErrorColor] =
-    useState("text-[#303030]");
   const [passwordLengthErrorColor, setPasswordLengthErrorColor] =
     useState("text-[#303030]");
   const [passwordMatchErrorColor, setPasswordMatchErrorColor] =
     useState("text-[#303030]");
-  const [firstNameRingColor, setFirstNameRingColor] =
-    useState("border-[#2A2A2A]");
-  const [lastNameRingColor, setLastNameRingColor] =
-    useState("border-[#2A2A2A]");
+  const [nameRingColor, setnameRingColor] = useState("border-[#2A2A2A]");
   const [pinCodeRingColor, setPinCodeRingColor] = useState("border-[#2A2A2A]");
   const [passwordRingColor, setPasswordRingColor] =
     useState("border-[#2A2A2A]");
   const [confirmPasswordRingColor, setConfirmPasswordRingColor] =
     useState("border-[#2A2A2A]");
-  const [bloodGroupError, setBloodGroupError] = useState(false);
-  const [genderError, setGenderError] = useState(false);
   const [cityError, setCityError] = useState(false);
   const [pincodeError, setPincodeError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+  const [addressError, setAddressError] = useState(false);
 
   useEffect(() => {
-    if (firstName.length > 0 && firstName.length >= 6) {
-      setNameLengthErrorColor("text-green-600");
+    if (name.length > 0 && name.length >= 6) {
+      setnameRingColor("text-green-600");
     } else {
-      setNameLengthErrorColor("text-[#303030]");
+      setnameRingColor("text-[#303030]");
     }
-  }, [firstName]);
-
-  useEffect(() => {
-    if (lastName.length > 0 && lastName.length >= 6) {
-      setNameLengthErrorColor("text-green-600");
-    } else {
-      setNameLengthErrorColor("text-[#303030]");
-    }
-  }, [lastName]);
+  }, [name]);
 
   useEffect(() => {
     if (password.length > 0 && password.length >= 8) {
@@ -83,26 +64,32 @@ const Signup = () => {
     }
   }, [confirmPassword]);
 
-  const handleSignup = async (e) => {
+  const handleHealthCareSignup = async (e) => {
     e.preventDefault();
-    var firstnameHasError = false;
-    var lastnameHasError = false;
+    var nameHasError = false;
+    var emailHasError = false;
+    var phoneHasError = false;
+    var addressHasError = false;
     var passwordHasError = false;
 
-    if (firstName.length === 0) {
-      setNameLengthErrorColor("text-red-400");
-      setNameErrorColor("text-red-400");
-      firstnameHasError = true;
-    } else {
-      setNameLengthErrorColor("text-green-600");
+    if (name.length === 0) {
+      setnameRingColor("text-red-400");
+      nameHasError = true;
     }
 
-    if (lastName.length === 0) {
-      setNameLengthErrorColor("text-red-400");
-      setNameErrorColor("text-red-400");
-      lastnameHasError = true;
-    } else {
-      setNameLengthErrorColor("text-green-600");
+    if (email.length === 0) {
+      setEmailError(true);
+      emailHasError = true;
+    }
+
+    if (phone.length === 0) {
+      setPhoneError(true);
+      phoneHasError = true;
+    }
+
+    if (address.length === 0) {
+      setAddressError(true);
+      addressHasError = true;
     }
 
     if (password.length === 0) {
@@ -112,29 +99,26 @@ const Signup = () => {
       if (password.length < 8) {
         setPasswordLengthErrorColor("text-red-400");
         passwordHasError = true;
-      } else {
-        setPasswordLengthErrorColor("text-green-600");
       }
     }
 
-    if (firstnameHasError) setFirstNameRingColor("border-red-500");
-    if (lastnameHasError) setLastNameRingColor("border-red-500");
+    if (nameHasError) setnameRingColor("border-red-500");
+    if (emailHasError) setEmailError(true);
+    if (phoneHasError) setPhoneError(true);
+    if (addressHasError) setAddressError(true);
     if (passwordHasError) setPasswordRingColor("border-red-500");
-    if (passwordHasError || firstnameHasError || lastnameHasError) return;
+    if (
+      passwordHasError ||
+      nameHasError ||
+      emailHasError ||
+      phoneHasError ||
+      addressHasError
+    )
+      return;
 
     if (password !== confirmPassword) {
       setPasswordMatchErrorColor("text-red-400");
       setConfirmPasswordRingColor("border-red-500");
-      return;
-    }
-
-    if (!bloodGroup) {
-      setBloodGroupError(true);
-      return;
-    }
-
-    if (!gender) {
-      setGenderError(true);
       return;
     }
 
@@ -149,17 +133,15 @@ const Signup = () => {
     }
 
     try {
-      await signup(
-        firstName,
-        lastName,
+      await healthcareSignup(
+        name,
         email,
         phone,
         password,
-        selectedRole,
-        bloodGroup,
-        gender,
+        address,
         city,
-        pincode
+        pincode,
+        selectedRole
       );
       navigate("/verify-email");
     } catch (error) {
@@ -170,6 +152,11 @@ const Signup = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const toggleRole = (selectedRole) => {
+    setSelectedRole(selectedRole);
+    console.log(selectedRole);
   };
 
   return (
@@ -201,35 +188,37 @@ const Signup = () => {
             Login
           </Link>
           <form
-            onSubmit={handleSignup}
+            onSubmit={handleHealthCareSignup}
             className="py-2 w-full h-full flex items-center justify-center flex-col"
           >
             <h1 className="mb-6 text-4xl Geist-semibold text-white">
-              Create an account
+              Healthcare Access
             </h1>
             <div className="relative mb-4 Geist border w-[360px] md:w-[420px] border-[#2A2A2A] bg-[#09090b] outline-none h-12 text-base rounded-[7px] flex">
               <div
                 className={`absolute transition-all duration-300 ease-in-out ${
-                  selectedRole === "donor" ? "left-0" : "left-[50%]"
+                  selectedRole === "Hospital" ? "left-0" : "left-[50%]"
                 } w-[50%] h-full bg-[#1e1e1e] rounded-[6px]`}
               />
               <button
-                onClick={() => toggleRole("donor")}
+                onClick={() => toggleRole("Hospital")}
                 className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
-                  selectedRole === "donor" ? "text-[#d6d6d6]" : "text-[#68686F]"
-                }`}
-              >
-                Donor
-              </button>
-              <button
-                onClick={() => toggleRole("reciever")}
-                className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
-                  selectedRole === "reciever"
+                  selectedRole === "Hospital"
                     ? "text-[#d6d6d6]"
                     : "text-[#68686F]"
                 }`}
               >
-                Reciever
+                Hospital
+              </button>
+              <button
+                onClick={() => toggleRole("Laboratory")}
+                className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
+                  selectedRole === "Laboratory"
+                    ? "text-[#d6d6d6]"
+                    : "text-[#68686F]"
+                }`}
+              >
+                Laboratory
               </button>
             </div>
             <div
@@ -240,27 +229,17 @@ const Signup = () => {
                 maxLength={16}
                 type="text"
                 style={{ zIndex: 1001 }}
-                placeholder="Enter your first name"
-                className={`Geist border w-[50%] caret-white mr-1 placeholder:text-[#68686F] bg-[#09090b] ${firstNameRingColor} focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
-                onChange={(e) => setFirstName(e.target.value)}
-                value={firstName}
-                required
-              />
-              <input
-                maxLength={16}
-                type="text"
-                style={{ zIndex: 1001 }}
-                placeholder="Enter your last name"
-                className={`Geist border  w-[50%] caret-white ml-1 placeholder:text-[#68686F] bg-[#09090b] ${lastNameRingColor} focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
-                onChange={(e) => setLastName(e.target.value)}
-                value={lastName}
+                placeholder="Enter the Organization's name"
+                className={`Geist border w-full caret-white mr-1 placeholder:text-[#68686F] bg-[#09090b] ${nameRingColor} focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
+                onChange={(e) => setname(e.target.value)}
+                value={name}
                 required
               />
             </div>
             <div style={{ zIndex: 1001 }} className="px-1 mb-4">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter the Organization's email"
                 style={{ zIndex: 1001 }}
                 className="Geist border w-[360px] md:w-[420px] border-[#2A2A2A] caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 mb-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center"
                 value={email}
@@ -269,7 +248,7 @@ const Signup = () => {
               />
               <input
                 type="text"
-                placeholder="Enter your phone number"
+                placeholder="Enter your phone/landline number"
                 style={{ zIndex: 1001 }}
                 className="Geist border w-[360px] md:w-[420px] border-[#2A2A2A] caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center"
                 value={phone}
@@ -281,47 +260,17 @@ const Signup = () => {
               style={{ zIndex: 1001 }}
               className="w-[360px] md:w-[420px] mb-4 flex"
             >
-              <select
-                style={{ zIndex: 1001 }}
-                value={bloodGroup}
-                onChange={(e) => {
-                  setBloodGroup(e.target.value);
-                  setBloodGroupError(false);
-                }}
-                className="Geist border border-[#2A2A2A] w-[50%] mr-1 caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-3 outline-none h-12 text-base text-[#5D5D63] rounded-[7px] flex items-center justify-center"
-              >
-                <option value="">Blood group</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-              {bloodGroupError && (
-                <div className="text-red-400 mb-2">
-                  Please select a blood group
-                </div>
-              )}
-              <select
-                style={{ zIndex: 1001 }}
-                value={gender}
-                onChange={(e) => {
-                  setGender(e.target.value);
-                  setGenderError(false);
-                }}
-                className="Geist border border-[#2A2A2A] w-[50%] ml-1 caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none h-12 text-base text-[#5D5D63] rounded-[7px] flex items-center justify-center"
-              >
-                <option value="">Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-              {genderError && (
-                <div className="text-red-400 mb-2">Please select a gender</div>
-              )}
+              <textarea
+                className="Geist border border-[#3a3a3a] w-full caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none text-base text-white rounded-[7px] py-2 resize-none overflow-y-auto "
+                type="text"
+                value={address}
+                rows={2}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+                placeholder="Enter the Organization's address "
+                minLength={5}
+                maxLength={100}
+              />
             </div>
             <div
               style={{ zIndex: 1001 }}
@@ -343,6 +292,7 @@ const Signup = () => {
                 <option value="Bhayandar">Bhayandar</option>
                 <option value="Vasai">Vasai</option>
                 <option value="Virar">Virar</option>
+                <option value="Other">Other</option>
               </select>
               {cityError && (
                 <div className="text-red-400 mb-2">Please select a city</div>
@@ -413,16 +363,12 @@ const Signup = () => {
               type="submit"
               className="h-12 mt-4 w-[360px] md:w-[420px] text-base Geist-semibold bg-gray-100 text-[#09090B] rounded-[7px] flex items-center justify-center"
             >
-              {isLoading ? <Loader size={24} /> : "Sign Up"}
+              {isLoading ? <Loader size={24} /> : "Register"}
             </button>
-            <h3 className="Geist text-base mt-4 text-[#68686F]">
+            <h3 className="Geist text-base my-4 text-[#68686F]">
               Already a member?{" "}
               <Link to="/login" className="Geist-Semibold text-gray-300">
-                &nbsp;Log In &nbsp;
-              </Link>
-              or a Healthcare owner? 
-              <Link to="/healthcare-signup" className="Geist-Semibold text-gray-300">
-                &nbsp;Sign In &nbsp;
+                &nbsp;Log In
               </Link>
             </h3>
           </form>
@@ -432,4 +378,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default HealthCareSignup;

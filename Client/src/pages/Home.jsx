@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../fonts/stylesheet.css";
 import { Link } from "react-router-dom";
 import FloatingShape from "../style/FloatingShapes.jsx";
-import Navigation from "../components/user/Navigation.jsx";
+import Navigation from "../components/reciever/Navigation.jsx";
 import { useAuthStore } from "../store/auth.js";
 import logo from "../assets/logo.png";
 import Loader from "../components/Loader.jsx";
@@ -68,7 +68,7 @@ const Home = () => {
           style={{ zIndex: 11 }}
           className="Apercu-Bold text-white text-center text-5xl sm:text-7xl md:text-8xl lg:text-9xl"
         >
-          LIFEFLOW
+          MED-EXPERT
           <p
             className={`md:text-base lg:text-xl px-8 sm:px-2 mt-3 text-sm Geist text-center text-gray-300 fade-text ${
               fade ? "" : "fade-out"

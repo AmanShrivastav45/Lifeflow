@@ -9,11 +9,14 @@ import ForgotPasswordPage from "./pages/authentication/ForgotPasswordPage.jsx";
 import Loader from "./components/Loader";
 import { useAuthStore } from "./store/auth.js";
 import Home from "./pages/Home.jsx";
-import UserDashboard from "./pages/verified-user/DonorDashboard.jsx";
-import RecieverHome from "./pages/verified-mentor/RecieverHome.jsx";
-import BloodBank from "./pages/verified-user/BloodBank.jsx";
-import Hospitals from "./pages/verified-user/Hospitals.jsx";
-import Laboratories from "./pages/verified-user/Laboratories.jsx";
+import UserDashboard from "./pages/verified-donor/DonorDashboard.jsx";
+import RecieverHome from "./pages/verified-reciever/RecieverHome.jsx";
+import BloodBank from "./pages/verified-donor/BloodBank.jsx";
+import Hospitals from "./pages/verified-donor/Hospitals.jsx";
+import Laboratories from "./pages/verified-donor/Laboratories.jsx";
+import HealthCareSignup from "./pages/authentication/HealthCareSignup.jsx";
+import HospitalHome from "./pages/verified-hospital/HospitalHome.jsx";
+import LabHome from "./pages/verified-lab/LabHome.jsx";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -30,6 +33,10 @@ const RedirectAuthenticatedUser = ({ children }) => {
       return <Navigate to={`/donor/${user._id}`} replace />;
     } else if (role === "reciever") {
       return <Navigate to={`/user/${user._id}`} replace />;
+    } else if (role === "Hospital" || role === "hospital") {
+      return <Navigate to={`/hospital/${user._id}`} replace />;
+    } else if (role === "Laboratory" || role === "laboratory") {
+      return <Navigate to={`/lab/${user._id}`} replace />;
     } else {
       <Navigate to="/" replace />;
     }
@@ -73,6 +80,22 @@ function App() {
           }
         />
         <Route
+          path="/hospital/:hospitalId"
+          element={
+            <ProtectedRoute>
+              <HospitalHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lab/:labId"
+          element={
+            <ProtectedRoute>
+              <LabHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/user/:recieverId/bloodbank"
           element={
             <ProtectedRoute>
@@ -94,6 +117,14 @@ function App() {
             <RedirectAuthenticatedUser>
               <Signup />
             </RedirectAuthenticatedUser>
+          }
+        />
+        <Route
+          path="/healthcare-signup"
+          element={
+            // <RedirectAuthenticatedUser>
+              <HealthCareSignup />
+            // </RedirectAuthenticatedUser>
           }
         />
         <Route
