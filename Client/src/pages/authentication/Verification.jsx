@@ -61,7 +61,7 @@ const Verification = () => {
 			navigate(`/lab/${user._id}`);
 		}
 		toast.success("Email verified successfully");
-		toast.success("Welcome to Med-Expert");
+		toast.success("Welcome to Lifeflow");
 	  } catch (error) {
 		console.log(error);
 	  }

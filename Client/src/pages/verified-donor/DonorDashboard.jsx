@@ -10,6 +10,7 @@ import logo from "../../assets/logo.png";
 import DonationCard from "../../components/donor/DonationCard.jsx";
 import toast from "react-hot-toast";
 import { NavLink } from "react-router-dom";
+import NoCard from "../../assets/nonotes.png"
 
 const DonorDashboard = () => {
   const { donorId } = useParams();
@@ -229,7 +230,8 @@ const DonorDashboard = () => {
             </div>
           </div>
         ) : (
-          <div className="h-full w-full flex items-center justify-center">
+          <div className="h-full w-full flex items-center flex-col justify-center">
+            <img src={NoCard} className="h-72 bg-opacity-50 mb-8"/>
             No donations found.
           </div>
         )}
