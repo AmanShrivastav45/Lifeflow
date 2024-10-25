@@ -9,9 +9,12 @@ import Astronaut from "../../style/Astronaut.jsx";
 import FloatingShape from "../../style/FloatingShapes.jsx";
 import { useAuthStore } from "../../store/auth.js";
 import "../../fonts/stylesheet.css";
+import logo from "../../assets/logo.png";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [fade, setFade] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,6 +32,27 @@ const Signup = () => {
   const toggleRole = (selectedRole) => {
     setSelectedRole(selectedRole);
   };
+  const quotes = [
+    "Blood donation is the gift of life. Your simple act can save lives and inspire hope.",
+    "Every blood donor is a hero, silently saving lives and giving patients another chance at life.",
+    "One donation can save three lives. It's a small act of kindness with massive impact.",
+    "Donating blood costs nothing, but it can mean everything to someone who desperately needs it.",
+    "Blood donors are lifesavers. Their generosity helps hospitals, patients, and families in times of crisis.",
+  ];
+  useEffect(() => {
+    // Quote change logic
+    const quoteInterval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
+        setFade(true);
+      }, 1000);
+    }, 5000);
+
+    return () => {
+      clearInterval(quoteInterval);
+    };
+  }, []);
 
   const [nameErrorColor, setNameErrorColor] = useState("text-[#303030]");
   const [nameLengthErrorColor, setNameLengthErrorColor] =
@@ -175,19 +199,22 @@ const Signup = () => {
   return (
     <div className="min-h-screen h-screen w-full flex items-center justify-center">
       <div className="h-full w-full rounded-[7px] flex flex-row">
-        <div className="h-full lg:w-[50%] bg-[#2a2a2a] flex items-center justify-center">
-          <div className="relative lg:h-[340px] lg:w-[540px] mb-24 flex items-center justify-center">
-            <Astronaut />
+        <div className="h-full lg:w-[50%] bg-[#1e1e1e] flex items-center justify-center">
+          <div className="relative lg:h-[340px] lg:w-[540px] mb-24 flex flex-col items-center justify-center">
+            <img src={logo} className="h-96 mb-8" />
+            <h1 className="Apercu-Bold text-4xl text-white">LIFEFLOW</h1>
           </div>
           <div className="absolute top-10 left-10">
             <MdOutlineKeyboardCommandKey className="mr-2 text-white text-4xl" />
           </div>
           <div className="Geist text-gray-300 absolute bottom-16 ">
-            <h1 className="hidden text-left lg:block mx-16 lg:text-base xl:text-xl">
-              "The beautiful thing about learning is that no one can take it
-              away from you. It's a lifelong journey that empowers us to grow,
-              adapt, and shape our own destinies."
-            </h1>
+            <p
+              className={`md:text-base lg:text-xl px-8 sm:px-2 mt-3 text-sm Geist text-center text-gray-300 fade-text ${
+                fade ? "" : "fade-out"
+              }`}
+            >
+              {quotes[quoteIndex]}
+            </p>
           </div>
         </div>
         <div className="w-full relative lg:w-[50%] h-full bg-[#09090B] overflow-hidden">
@@ -420,8 +447,11 @@ const Signup = () => {
               <Link to="/login" className="Geist-Semibold text-gray-300">
                 &nbsp;Log In &nbsp;
               </Link>
-              or a Healthcare owner? 
-              <Link to="/healthcare-signup" className="Geist-Semibold text-gray-300">
+              or a Healthcare owner?
+              <Link
+                to="/healthcare-signup"
+                className="Geist-Semibold text-gray-300"
+              >
                 &nbsp;Sign In &nbsp;
               </Link>
             </h3>

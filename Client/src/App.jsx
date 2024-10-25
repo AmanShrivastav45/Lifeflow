@@ -72,6 +72,14 @@ function App() {
           }
         />
         <Route
+          path="/donor/:donorId/bloodbank"
+          element={
+            <ProtectedRoute>
+              <BloodBank />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/user/:recieverId"
           element={
             <ProtectedRoute>
@@ -163,7 +171,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster
-        position="top-right"
+        position="top-center"
         reverseOrder={false}
         gutter={8}
         containerClassName=""

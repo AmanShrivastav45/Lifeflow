@@ -68,7 +68,7 @@ const Home = () => {
           style={{ zIndex: 11 }}
           className="Apercu-Bold text-white text-center text-5xl sm:text-7xl md:text-8xl lg:text-9xl"
         >
-          MED-EXPERT
+          LIFEFLOW
           <p
             className={`md:text-base lg:text-xl px-8 sm:px-2 mt-3 text-sm Geist text-center text-gray-300 fade-text ${
               fade ? "" : "fade-out"

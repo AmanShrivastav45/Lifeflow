@@ -96,11 +96,11 @@ const DonorDashboard = () => {
                 </NavLink>
               </div>
               <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
-                MED-EXPERT
+                LIFEFLOW
               </h1>
               <div className="flex ml-8">
                 <NavLink
-                  to={`/user/${recieverId}/bloodbank`}
+                  to={`/donor/${donorId}/bloodbank`}
                   className={getNavLinkClass}
                 >
                   Blood Bank
@@ -141,7 +141,7 @@ const DonorDashboard = () => {
                       className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
                       role="menuitem"
                     >
-                      Logout Med-Expert
+                      Logout Lifeflow
                     </button>
                   </div>
                 </div>

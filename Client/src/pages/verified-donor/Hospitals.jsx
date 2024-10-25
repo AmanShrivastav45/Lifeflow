@@ -16,7 +16,7 @@ const Hospitals = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [location, setLocation] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
   const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
@@ -50,6 +50,32 @@ const Hospitals = () => {
             city: "Mumbai",
             bloodGroup: "A+",
             distance: "5 km",
+            bloodBank: {
+              Aplus: {
+                quantityInLiters: 3,
+              },
+              Aminus: {
+                quantityInLiters: 1,
+              },
+              Bplus: {
+                quantityInLiters: 3,
+              },
+              Bminus: {
+                quantityInLiters: 1,
+              },
+              Oplus: {
+                quantityInLiters: 3,
+              },
+              Ominus: {
+                quantityInLiters: 1,
+              },
+              ABplus: {
+                quantityInLiters: 3,
+              },
+              ABminus: {
+                quantityInLiters: 1,
+              },
+            },
           },
           {
             _id: "2",
@@ -59,6 +85,32 @@ const Hospitals = () => {
             city: "Mumbai",
             bloodGroup: "B+",
             distance: "7 km",
+            bloodBank: {
+              Aplus: {
+                quantityInLiters: 3,
+              },
+              Aminus: {
+                quantityInLiters: 1,
+              },
+              Bplus: {
+                quantityInLiters: 3,
+              },
+              Bminus: {
+                quantityInLiters: 1,
+              },
+              Oplus: {
+                quantityInLiters: 3,
+              },
+              Ominus: {
+                quantityInLiters: 1,
+              },
+              ABplus: {
+                quantityInLiters: 3,
+              },
+              ABminus: {
+                quantityInLiters: 1,
+              },
+            },
           },
           {
             _id: "3",
@@ -68,6 +120,32 @@ const Hospitals = () => {
             city: "Mumbai",
             bloodGroup: "O+",
             distance: "3 km",
+            bloodBank: {
+              Aplus: {
+                quantityInLiters: 3,
+              },
+              Aminus: {
+                quantityInLiters: 1,
+              },
+              Bplus: {
+                quantityInLiters: 3,
+              },
+              Bminus: {
+                quantityInLiters: 1,
+              },
+              Oplus: {
+                quantityInLiters: 3,
+              },
+              Ominus: {
+                quantityInLiters: 1,
+              },
+              ABplus: {
+                quantityInLiters: 3,
+              },
+              ABminus: {
+                quantityInLiters: 1,
+              },
+            },
           },
           {
             _id: "4",
@@ -77,6 +155,32 @@ const Hospitals = () => {
             city: "Mumbai",
             bloodGroup: "AB+",
             distance: "2 km",
+            bloodBank: {
+              Aplus: {
+                quantityInLiters: 3,
+              },
+              Aminus: {
+                quantityInLiters: 1,
+              },
+              Bplus: {
+                quantityInLiters: 3,
+              },
+              Bminus: {
+                quantityInLiters: 1,
+              },
+              Oplus: {
+                quantityInLiters: 3,
+              },
+              Ominus: {
+                quantityInLiters: 1,
+              },
+              ABplus: {
+                quantityInLiters: 3,
+              },
+              ABminus: {
+                quantityInLiters: 1,
+              },
+            },
           },
           {
             _id: "5",
@@ -86,6 +190,32 @@ const Hospitals = () => {
             city: "Mumbai",
             bloodGroup: "A-",
             distance: "6 km",
+            bloodBank: {
+              Aplus: {
+                quantityInLiters: 3,
+              },
+              Aminus: {
+                quantityInLiters: 1,
+              },
+              Bplus: {
+                quantityInLiters: 3,
+              },
+              Bminus: {
+                quantityInLiters: 1,
+              },
+              Oplus: {
+                quantityInLiters: 3,
+              },
+              Ominus: {
+                quantityInLiters: 1,
+              },
+              ABplus: {
+                quantityInLiters: 3,
+              },
+              ABminus: {
+                quantityInLiters: 1,
+              },
+            },
           },
         ];
 
@@ -100,11 +230,20 @@ const Hospitals = () => {
     fetchHospitals();
   }, []);
 
-
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = hospitals.filter((hospital) =>
+        hospital.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredHospitals(filtered);
+    } else {
+      setFilteredHospitals(hospitals); // Reset to all hospitals if search is empty
+    }
+  }, [searchTerm, hospitals]);
 
   return (
     <div className="h-screen relative overflow-hidden w-full flex flex-col items-center justify-start bg-[#0a0a0a]">
-            <div
+      <div
         style={{ zIndex: "1000" }}
         className="Geist h-20 bg-black top-0 w-full fixed flex justify-center border-b border-[#1a1a1a]"
       >
@@ -117,7 +256,7 @@ const Hospitals = () => {
                 </NavLink>
               </div>
               <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
-                MED-EXPERT
+                LIFEFLOW
               </h1>
               <div className="flex ml-8">
                 <NavLink
@@ -162,7 +301,7 @@ const Hospitals = () => {
                       className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
                       role="menuitem"
                     >
-                      Logout Med-Expert
+                      Logout Lifeflow
                     </button>
                   </div>
                 </div>
@@ -190,8 +329,8 @@ const Hospitals = () => {
                   type="text"
                   placeholder="Search for hospitals..."
                   className="h-full w-full px-4 outline-none bg-[#09090b] focus:border-gray-700 flex items-center justify-center rounded-[7px]"
-                  onChange={(e) => setName(e.target.value)}
-                  value={name}
+                  onChange={( e) => setSearchTerm(e.target.value)} // Update search term
+                  value={searchTerm}
                   required
                 />
                 <button className="bg-gray-700 hover:bg-gray-600 text-white h-full px-3 rounded">
@@ -222,6 +361,7 @@ const Hospitals = () => {
                     city={hospital.city}
                     bloodGroup={hospital.bloodGroup}
                     distance={hospital.distance}
+                    bloodBank={hospital.bloodBank}
                   />
                 ))
               )}

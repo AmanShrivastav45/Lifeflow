@@ -25,7 +25,7 @@ const LabHome = () => {
   const [labs, setLabs] = useState([
     {
       _id: "lab1",
-      title: "Lab 1: Introduction to Blood Analysis",
+      title: "Lab 1: Blood Analysis",
       pdf: "dummy-lab1.pdf",
       category: "Blood Analysis",
     },
@@ -77,7 +77,7 @@ const LabHome = () => {
   const bloodReports = [
     {
       id: 1,
-      title: "Lab 1: Introduction to Blood Analysis",
+      title: "Lab 1: Blood Analysis",
       reports: [
         { id: 1, name: "Hemoglobin (Hb)", value: "14.5 g/dL" },
         { id: 2, name: "Hematocrit (Hct)", value: "42.5%" },
@@ -191,7 +191,7 @@ const LabHome = () => {
   };
 
   return (
-    <div className="h-screen relative overflow-hidden w-full flex flex-col items-center justify-start bg-[#0a0a0a]">
+    <div className="h-screen Geist relative overflow-hidden w-full flex flex-col items-center justify-start bg-[#0a0a0a]">
       <div
         style={{ zIndex: "1000" }}
         className="Geist h-20 bg-black top-0 w-full fixed flex justify-center border-b border-[#1a1a1a]"
@@ -199,28 +199,25 @@ const LabHome = () => {
         <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex flex-col">
           <div className="w-full h-full flex items-center justify-between text-md p-2">
             <div className="flex items-center">
-              <div className="relative w-[60px] flex items-center mx-2">
+              <div className="relative w-[40px] flex items-center mx-2">
                 <NavLink to="/">
                   <img src={logo} className="h-8" alt="logo" />
                 </NavLink>
               </div>
               <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
-                MED-EXPERT
+                Lifeflow
               </h1>
             </div>
-            <h1 className="text-white text-xl Geist-semibold">
-              HEALTHCARE LABORATORY
+            <h1 className="text-white text-xl Geist">
+              {user?.name || "Unknown"}
             </h1>
             <div className="flex relative justify-between space-x-4">
-              <div className="text-white bg-blue-700 px-2 py-2 rounded-[5px] flex items-center justify-center">
-                <button onClick={handleLogout}>Logout</button>
-              </div>
               <button onClick={toggleProfileButton}>
                 <div className="h-7 w-7 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-[50%]"></div>
               </button>
               {isProfileButtonOpen && user ? (
                 <div
-                  className="absolute right-0 top-full mt-2 w-48 bg-[#0a0a0 a] border border-[#1e1e1e] rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+                  className="absolute right-0 top-full  mt-2 w-48 bg-[#0a0a0a] border border-[#1e1e1e] rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
                   style={{ right: "10px", top: "25px" }}
                 >
                   <div
@@ -242,7 +239,7 @@ const LabHome = () => {
                       className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
                       role="menuitem"
                     >
-                      Logout Med-Expert
+                      Logout Lifeflow
                     </button>
                   </div>
                 </div>
@@ -255,23 +252,21 @@ const LabHome = () => {
       <div className="h-full w-full mt-24 flex items-start justify-center text-white overflow-y-auto hide-scrollbar">
         <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex items-start text-white sm:p-3 hide-scrollbar">
           <div className="h-full w-[50%] flex flex-col">
-            <div className="flex items-center mb-4">
-              <label className="mr-4">Filter by Category:</label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="bg-[#09090b] text-white border border-[#2A2A2A] rounded-[7px] h-10 px-4"
-              >
-                <option value="All">All</option>
-                <option value="Blood Analysis">Blood Analysis</option>
-                <option value="Thyroid Test">Thyroid Test</option>
-                <option value="Sonography">Sonography</option>
-                <option value="MRI">MRI</option>
-              </select>
-            </div>
-
             <div className="w-full h-[350px] bg-[#1a1a1a] border border-[#2e2e2e] p-4 rounded-[7px] overflow-y-auto hide-scrollbar">
-              <h2 className="text-xl font-bold mb-4">Pending Reports</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold my-4">Pending Reports</h2>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="bg-[#09090b] text-white border border-[#2A2A2A] rounded-[7px] h-10 px-4"
+                >
+                  <option value="All">All</option>
+                  <option value="Blood Analysis">Blood Analysis</option>
+                  <option value="Thyroid Test">Thyroid Test</option>
+                  <option value="Sonography">Sonography</option>
+                  <option value="MRI">MRI</option>
+                </select>{" "}
+              </div>
               {filteredLabs.length === 0 ? (
                 <p>No reports available.</p>
               ) : (

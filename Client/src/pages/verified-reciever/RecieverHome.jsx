@@ -12,7 +12,7 @@ import { NavLink } from "react-router-dom";
 const RecieverHome = () => {
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [fade, setFade] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const quotes = [
     "Blood donation is the gift of life. Your simple act can save lives and inspire hope.",
     "Every blood donor is a hero, silently saving lives and giving patients another chance at life.",
@@ -40,11 +40,6 @@ const RecieverHome = () => {
       : "hover:text-white p-3 flex items-center justify-center h-full rounded-[4px] text-[#868686]";
 
   useEffect(() => {
-    // Simulate loading time (you can remove this if the content is fetched from API)
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); // Set a 3-second loader
-
     // Quote change logic
     const quoteInterval = setInterval(() => {
       setFade(false);
@@ -56,7 +51,6 @@ const RecieverHome = () => {
 
     return () => {
       clearInterval(quoteInterval);
-      clearTimeout(timer);
     };
   }, []);
 
@@ -75,7 +69,7 @@ const RecieverHome = () => {
                 </NavLink>
               </div>
               <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
-                MED-EXPERT
+                LIFEFLOW
               </h1>
               <div className="flex ml-8">
                 <NavLink
@@ -120,7 +114,7 @@ const RecieverHome = () => {
                       className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
                       role="menuitem"
                     >
-                      Logout Med-Expert
+                      Logout Lifeflow
                     </button>
                   </div>
                 </div>
@@ -133,7 +127,7 @@ const RecieverHome = () => {
       <FloatingShape size="w-48 h-48" top="70%" left="80%" delay={3} />
       <FloatingShape size="w-40 h-40" top="40%" left="-10%" delay={1} />
 
-      <img src={logo} className="h-72  mb-8 opacity-50" />
+      <img src={logo} className="h-96 mb-8 opacity-80" />
       <p
         className={`md:text-base lg:text-xl px-8 sm:px-2 mt-3 text-sm Geist text-center text-gray-300 fade-text ${
           fade ? "" : "fade-out"

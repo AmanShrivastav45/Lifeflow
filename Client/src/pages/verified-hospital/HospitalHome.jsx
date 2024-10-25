@@ -19,7 +19,7 @@ const HospitalHome = () => {
   const toggleProfileButton = () => {
     setIsProfileButtonOpen(!isProfileButtonOpen);
   };
-  
+
   const [bloodGroup, setBloodGroup] = useState("");
   const [quantityInLiters, setQuantityInLiters] = useState("");
   const [bloodBank, setBloodBank] = useState([]); // Initialize as an empty array
@@ -72,7 +72,6 @@ const HospitalHome = () => {
   useEffect(() => {
     const fetchBloodBankDetails = async () => {
       try {
-
         const response = await axios.get(
           `http://localhost:5050/lifeflow/auth/${hospitalId}/bloodbank`
         );
@@ -100,7 +99,7 @@ const HospitalHome = () => {
 
   const handleUpdateData = async () => {
     try {
-      toast.success("Data updated successfully!")
+      toast.success("Data updated successfully!");
       const response = await axios.put(
         `http://localhost:5050/lifeflow/auth/hospital/${hospitalId}/bloodbank`,
         JSON.stringify(bloodGroupQuantities),
@@ -137,16 +136,18 @@ const HospitalHome = () => {
         <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex flex-col">
           <div className="w-full h-full flex items-center justify-between text-md p-2">
             <div className="flex items-center">
-              <div className="relative w-[60px] flex items-center mx-2">
+              <div className="relative w-[40px] flex items-center mx-2">
                 <NavLink to="/">
                   <img src={logo} className="h-8" alt="logo" />
                 </NavLink>
               </div>
               <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
-                MED-EXPERT
+                LIFEFLOW
               </h1>
             </div>
-            <h1 className="text-white text-xl Geist-semibold">HEALTHCARE HOSPITAL</h1>
+            <h1 className="text-white text-xl Geist">
+              {user?.name || "Unknown"}&nbsp;Hospital
+            </h1>
             <div className="flex relative justify-between space-x-4">
               <div className="text-white bg-blue-700 px-2 py-2 rounded-[5px] flex items-center justify-center">
                 <button onClick={handleUpdateData}>Update Data</button>
@@ -170,7 +171,7 @@ const HospitalHome = () => {
                     >
                       <span>Hospital: </span>
                       <span className="Geist text-gray-300">
-                        {user?.name || "Unknown User"}
+                        {user?.name || "Unknown"}
                       </span>
                     </div>
                     <button
@@ -178,7 +179,7 @@ const HospitalHome = () => {
                       className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
                       role="menuitem"
                     >
-                      Logout Med-Expert
+                      Logout Lifeflow
                     </button>
                   </div>
                 </div>
@@ -189,7 +190,7 @@ const HospitalHome = () => {
       </div>
       <div className="h-full w-full mt-24 flex items-start justify-center text-white overflow-y-auto hide-scrollbar">
         <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex items-start text-white sm:p-3 hide-scrollbar">
-          <div className="w-full text-white grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 Geist px-6 gap-6 overflow-y-auto hide-scrollbar">
+          <div className="w-full text-white grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 Geist  gap-6 overflow-y-auto hide-scrollbar">
             {Object.keys(bloodBank).map((bloodGroup, index) => (
               <div
                 key={index}
@@ -207,7 +208,7 @@ const HospitalHome = () => {
                 </div>
                 <div className="flex flex-col p-2">
                   <div className="flex items-center justify-center space-x-2 mt-2">
-                  <button
+                    <button
                       onClick={() => handleQuantityChange(bloodGroup, -1)} // Decrease quantity
                       className="bg-[#1e1e1e] border border-[#3a3a3a] h-10 w-10 hover:bg-[#2e2e2e] text-white font-bold py-1 px-2 rounded text-xl"
                     >
@@ -216,7 +217,7 @@ const HospitalHome = () => {
                     <p className="text-white text-center px-2">
                       Quantity: {bloodGroupQuantities[bloodGroup]} liters
                     </p>
- 
+
                     <button
                       onClick={() => handleQuantityChange(bloodGroup, 1)} // Increase quantity
                       className="bg-[#1e1e1e] border border-[#3a3a3a] h-10 w-10 hover:bg-[#2e2e2e] text-white font-semibold py-1 px-2 rounded text-xl"
