@@ -10,7 +10,8 @@ import logo from "../../assets/logo.png";
 import DonationCard from "../../components/donor/DonationCard.jsx";
 import toast from "react-hot-toast";
 import { NavLink } from "react-router-dom";
-import NoCard from "../../assets/nonotes.png"
+import NoCard from "../../assets/nonotes.png";
+import DonorNav from "./DonorNav.jsx";
 
 const DonorDashboard = () => {
   const { donorId } = useParams();
@@ -21,25 +22,6 @@ const DonorDashboard = () => {
   const [donations, setDonations] = useState([]); // State to hold donor donations
   const [createDonation, setCreateDonation] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null); // State to hold the selected donation
-
-  const { user, logout } = useAuthStore();
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  const val = JSON.parse(localStorage.getItem("user")) || null;
-  const recieverId = useParams().recieverId || null;
-  const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
-
-  const toggleProfileButton = () => {
-    setIsProfileButtonOpen(!isProfileButtonOpen);
-  };
-
-  const getNavLinkClass = ({ isActive }) =>
-    isActive
-      ? "text-white p-3 flex items-center justify-center h-full rounded-[4px]"
-      : "hover:text-white p-3 flex items-center justify-center h-full rounded-[4px] text-[#868686]";
 
   const handleDonationSuccess = () => {
     setCreateDonation(false);
@@ -86,71 +68,7 @@ const DonorDashboard = () => {
 
   return (
     <div className="bg-[#09090b] w-full min-h-screen overflow-hidden h-screen pt-24 flex flex-col items-center Geist">
-      <div style={{ zIndex: "1000" }}
-        className="Geist h-20 bg-black top-0 w-full fixed flex justify-center border-b border-[#1a1a1a]">
-        <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex flex-col">
-          <div className="w-full h-full flex items-center justify-between text-md p-2">
-            <div className="flex items-center">
-              <div className="relative w-[60px] flex items-center mx-2">
-                <NavLink to="/" className={getNavLinkClass}>
-                  <img src={logo} className="h-8" alt="logo" />
-                </NavLink>
-              </div>
-              <h1 className="text-gray-300 mt-1 font-semibold text-2xl">
-                LIFEFLOW
-              </h1>
-              <div className="flex ml-8">
-                <NavLink
-                  to={`/donor/${donorId}/bloodbank`}
-                  className={getNavLinkClass}
-                >
-                  Blood Bank
-                </NavLink>
-                <NavLink
-                  to={`/user/${recieverId}/hospitals`}
-                  className={getNavLinkClass}
-                >
-                  Hospitals
-                </NavLink>
-              </div>
-            </div>
-            <div className="flex relative justify-between space-x-4">
-              <button onClick={toggleProfileButton}>
-                <div className="h-7 w-7 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-[50%]"></div>
-              </button>
-              {isProfileButtonOpen && user ? (
-                <div
-                  className="absolute right-0 top-full mt-2 w-48 bg-[#0a0a0a] border border-[#1e1e1e] rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
-                  style={{ right: "10px", top: "25px" }}
-                >
-                  <div
-                    className="text-[#68686f]"
-                    role="menu"
-                    aria-orientation="vertical"
-                  >
-                    <div
-                      className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] w-full text-left"
-                      role="menuitem"
-                    >
-                      <span>User: </span>
-                      <span className="Geist text-gray-300">
-                        {user?.firstName || "Unknown User"}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="block px-4 py-3 text-sm hover:bg-[#1e1e1e] hover:text-gray-400 w-full text-left"
-                      role="menuitem"
-                    >
-                      Logout Lifeflow
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
+      <DonorNav />
       <button style={{ zIndex: 1100 }} onClick={toggleCreateDonation}>
         <FaCirclePlus className="text-yellow-500 hover:text-yellow-500 text-5xl fixed bottom-10 md:bottom-16 right-10 md:right-16 transition-all" />
       </button>
@@ -231,7 +149,7 @@ const DonorDashboard = () => {
           </div>
         ) : (
           <div className="h-full w-full flex items-center flex-col justify-center">
-            <img src={NoCard} className="h-72 bg-opacity-50 mb-8"/>
+            <img src={NoCard} className="h-72 bg-opacity-50 mb-8" />
             No donations found.
           </div>
         )}

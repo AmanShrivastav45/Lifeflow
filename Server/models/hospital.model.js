@@ -1,5 +1,23 @@
 import mongoose from "mongoose";
 
+const BloodBankEntrySchema = new mongoose.Schema({
+  bloodType: {
+    type: String,
+    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], // Allowed blood types
+    required: true,
+  },
+  quantityInLiters: {
+    type: Number,
+    default: 0, // Default value set to 0
+    required: true,
+    min: 0,
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const HospitalSchema = new mongoose.Schema(
   {
     name: {
@@ -39,102 +57,8 @@ const HospitalSchema = new mongoose.Schema(
       default: ["Emergency", "ICU", "Radiology", "Pharmacy"],
     },
     bloodBank: {
-      Aplus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      Aminus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      Bplus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      Bminus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      ABplus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      ABminus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      Oplus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-      Ominus: {
-        quantityInLiters: {
-          type: Number,
-          default: 0, // Default value set to 0
-          required: true,
-          min: 0,
-        },
-        lastUpdated: {
-          type: Date,
-          default: Date.now,
-        },
-      },
+      type: [BloodBankEntrySchema], // Use the BloodBankEntrySchema as an array
+      default: [], // Default to an empty array
     },
     city: {
       type: String,

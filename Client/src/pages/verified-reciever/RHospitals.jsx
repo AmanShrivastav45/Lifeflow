@@ -1,38 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navigation from "../../components/reciever/Navigation";
-import Hospital from "./Hospital";
+import Hospital from "../verified-donor/Hospital";
 import { FiSearch } from "react-icons/fi";
-import { useAuthStore } from "../../store/auth";
-import { useParams } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-import logo from "../../assets/logo.png";
-import DonorNav from "./DonorNav";
+import RecieverNav from "./RecieverNav";
 
-const Hospitals = () => {
+const RHospitals = () => {
   const [hospitals, setHospitals] = useState([]);
   const [filteredHospitals, setFilteredHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const { user, logout } = useAuthStore();
-  const recieverId = useParams().recieverId || null;
-  const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-  };
-
-  const toggleProfileButton = () => {
-    setIsProfileButtonOpen(!isProfileButtonOpen);
-  };
-
-  const getNavLinkClass = ({ isActive }) =>
-    isActive
-      ? "text-white p-3 flex items-center justify-center h-full rounded-[4px]"
-      : "hover:text-white p-3 flex items-center justify-center h-full rounded-[4px] text-[#868686]";
-
-  // Fetch all hospitals on component mount
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
@@ -57,13 +36,13 @@ const Hospitals = () => {
       );
       setFilteredHospitals(filtered);
     } else {
-      setFilteredHospitals(hospitals); // Reset to all hospitals if search is empty
+      setFilteredHospitals(hospitals); 
     }
   }, [searchTerm, hospitals]);
 
   return (
     <div className="h-screen relative overflow-hidden w-full flex flex-col items-center justify-start bg-[#0a0a0a]">
-      <DonorNav/>
+      <RecieverNav/>
       <div className="h-full w-full mt-24 flex items-center justify-center text-white overflow-y-auto hide-scrollbar">
         <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex text-white sm:p-3 h-full hide-scrollbar">
           <div className="h-full w-full px-2 flex flex-col">
@@ -126,4 +105,4 @@ const Hospitals = () => {
   );
 };
 
-export default Hospitals;
+export default RHospitals;

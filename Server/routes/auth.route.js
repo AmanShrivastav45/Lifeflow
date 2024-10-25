@@ -14,7 +14,8 @@ import {
   healthCareSignup,
   addBloodBankDetails,
   getBloodBankDetails,
-  updateBloodBankQuantities,
+  getAllHospitals,
+  makeDonationRequest,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/auth.token.js";
 import { Donation } from "../models/donor.model.js";
@@ -35,8 +36,9 @@ router.post("/donors/donations/:donorId", addDonation);
 router.get("/donors/donations", getAllDonations);
 router.get("/donors/:donorId/donations", getDonationsByDonor);
 router.post('/hospital/:hospitalId/bloodbank', addBloodBankDetails);
+router.get('/hospitals', getAllHospitals);
 router.get('/:hospitalId/bloodbank', getBloodBankDetails);
-router.put('/hospital/:hospitalId/bloodbank', updateBloodBankQuantities)
+router.post("/donor/:donorId/request", makeDonationRequest);
 router.get("/donors/donations/filter", async (req, res) => {
   const { bloodGroup, city, donationType } = req.query;
   let filter = {};

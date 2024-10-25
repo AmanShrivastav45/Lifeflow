@@ -3,18 +3,23 @@ import axios from "axios";
 import Donation from "../../components/reciever/Donation";
 import RequestDonation from "../../modals/RequestDonation";
 import toast from "react-hot-toast";
-import DonorNav from "./DonorNav";
+import RecieverNav from "./RecieverNav";
+import { useAuthStore } from "../../store/auth";
+import { useParams, NavLink } from "react-router-dom";
 
-const BloodBank = () => {
+const RBloodBank = () => {
+  const { user, logout } = useAuthStore();
+  const val = JSON.parse(localStorage.getItem("user")) || null;
+  const recieverId = useParams().recieverId || null;
   const [donations, setDonations] = useState([]);
   const [filteredDonations, setFilteredDonations] = useState([]);
-  const [bloodGroup, setBloodGroup] = useState([]); 
-  const [city, setCity] = useState([]); 
-  const [donationType, setDonationType] = useState([]); 
+  const [bloodGroup, setBloodGroup] = useState([]);
+  const [city, setCity] = useState([]);
+  const [donationType, setDonationType] = useState([]);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [showRequestDonation, setShowRequestDonation] = useState(false); 
+  const [showRequestDonation, setShowRequestDonation] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState({});
 
   const openRequestDonationModal = (donation) => {
@@ -82,10 +87,34 @@ const BloodBank = () => {
       setter([...stateArray, value]);
     }
   };
+
+  const handleDonationRequest = async (donorId, donorDetails) => {
+    try {
+      const requestData = {
+        receiverId: user.id,
+        receiverName: user.name,
+        bloodGroup: donorDetails.bloodGroup,
+        contactInfo: user.contactInfo,
+        city: user.city,
+      };
+
+      await axios.post(
+        `http://localhost:5050/lifeflow/auth/donors/${donorId}/request`,
+        requestData
+      );
+
+      toast.success("Donation request sent successfully.");
+    } catch (error) {
+      console.error("Error sending donation request:", error);
+      toast.error("Failed to send donation request.");
+    }
+  };
+
   return (
     <div className="Geist h-screen relative w-full overflow-hidden flex flex-col items-center justify-start bg-black">
-      <DonorNav/>
+      <RecieverNav />
       <div className="w-full xl:w-[1280px] 2xl:w-[1440px] flex mt-20">
+        {/* Filters Section */}
         <div className="hidden lg:block lg:w-[25%] xl:w-[20%] h-full  flex-col text-[#868686] text-md p-3 mb-24">
           <ul className="space-y-2 pl-2 mt-2 h-full overflow-y-hidden">
             <h1 className="text-xl Geist-semibold text-gray-200">Filters</h1>
@@ -201,10 +230,13 @@ const BloodBank = () => {
         </div>
         {showRequestDonation && (
           <RequestDonation
-            onCancel={closeRequestDonationModal}
+            onCancel={() => setShowRequestDonation(false)}
             onSuccess={() => {
-              toast.success("Your request has been made!");
-              closeRequestDonationModal();
+              handleDonationRequest(
+                selectedDonation._id,
+                selectedDonation
+              );
+              setShowRequestDonation(false);
             }}
             donationDetails={selectedDonation}
           />
@@ -214,4 +246,4 @@ const BloodBank = () => {
   );
 };
 
-export default BloodBank;
+export default RBloodBank;

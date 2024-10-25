@@ -465,6 +465,24 @@ export const getAllDonations = async (req, res) => {
   }
 };
 
+export const getAllHospitals = async (req, res) => {
+  try {
+    // Fetch all hospitals from the database
+    const hospitals = await Hospital.find({}).lean();
+
+    // Check if any hospitals were found
+    if (!hospitals.length) {
+      return res.status(404).json({ message: "No hospitals found." });
+    }
+
+    // Respond with the list of hospitals
+    res.status(200).json(hospitals);
+  } catch (error) {
+    console.error("Error fetching hospitals:", error); // Log the error for debugging
+    res.status(500).json({ message: "Error fetching hospitals", error: error.message });
+  }
+};
+
 export const getDonationsByDonor = async (req, res) => {
   const { donorId } = req.params; // Get donorId from request parameters
 
@@ -505,8 +523,8 @@ export const getDonationsByBloodGroup = async (req, res) => {
 };
 
 export const addBloodBankDetails = async (req, res) => {
-  const { hospitalId } = req.params; // Assuming hospitalId is passed as a parameter
-  const { bloodGroup, quantityInLiters } = req.body;
+  const { hospitalId } = req.params; 
+  const { bloodType, quantityInLiters } = req.body; 
 
   try {
     const hospital = await Hospital.findById(hospitalId);
@@ -515,19 +533,16 @@ export const addBloodBankDetails = async (req, res) => {
       return res.status(404).json({ message: 'Hospital not found' });
     }
 
-    // Check if blood group already exists in bloodBank.bloodGroups
-    const existingBloodGroupIndex = hospital.bloodBank.bloodGroups.findIndex(
-      (bg) => bg.bloodGroup === bloodGroup
+    const existingBloodGroupIndex = hospital.bloodBank.findIndex(
+      (entry) => entry.bloodType === bloodType
     );
 
     if (existingBloodGroupIndex !== -1) {
-      // Update existing entry
-      hospital.bloodBank.bloodGroups[existingBloodGroupIndex].quantityInLiters = quantityInLiters;
-      hospital.bloodBank.bloodGroups[existingBloodGroupIndex].lastUpdated = Date.now();
+      hospital.bloodBank[existingBloodGroupIndex].quantityInLiters = quantityInLiters;
+      hospital.bloodBank[existingBloodGroupIndex].lastUpdated = Date.now();
     } else {
-      // Add new entry
-      hospital.bloodBank.bloodGroups.push({
-        bloodGroup,
+      hospital.bloodBank.push({
+        bloodType,
         quantityInLiters,
         lastUpdated: Date.now(),
       });
@@ -542,95 +557,9 @@ export const addBloodBankDetails = async (req, res) => {
   }
 };
 
-export const updateBloodBankQuantities = async (req, res) => {
-  console.log('Received request to update blood bank quantities');
-  console.log('Request body:', req.body);
-
-  const { hospitalId } = req.params;
-  const { bloodGroupQuantities } = req.body;
-
-  if (!bloodGroupQuantities) {
-    console.log('Invalid request body: missing bloodGroupQuantities property');
-    return res.status(400).json({ message: 'Invalid request body: missing bloodGroupQuantities property' });
-  }
-
-  // Validate bloodGroupQuantities object
-  const requiredProperties = ['Aplus', 'Aminus', 'Bplus', 'Bminus', 'ABplus', 'ABminus', 'Oplus', 'Ominus'];
-  if (!requiredProperties.every(property => Object.prototype.hasOwnProperty.call(bloodGroupQuantities, property))) {
-    console.log('Invalid request body: missing required properties');
-    return res.status(400).json({ message: 'Invalid request body: missing required properties' });
-  }
-
-  if (!Object.values(bloodGroupQuantities).every(value => typeof value === 'number' && value >= 0)) {
-    console.log('Invalid request body: invalid values');
-    return res.status(400).json({ message: 'Invalid request body: invalid values' });
-  }
-
-  try {
-    console.log('Finding hospital by ID:', hospitalId);
-    const hospital = await Hospital.findById(hospitalId);
-
-    if (!hospital) {
-      console.log('Hospital not found');
-      return res.status(404).json({ message: 'Hospital not found' });
-    }
-
-    console.log('Updating blood bank quantities');
-
-    // Initialize bloodBank object with default values if not already initialized
-    if (!hospital.bloodBank) {
-      hospital.bloodBank = {
-        Aplus: { quantityInLiters: 0, lastUpdated: Date.now },
-        Aminus: { quantityInLiters: 0, lastUpdated: Date.now },
-        Bplus: { quantityInLiters: 0, lastUpdated: Date.now },
-        Bminus: { quantityInLiters: 0, lastUpdated: Date.now },
-        ABplus: { quantityInLiters: 0, lastUpdated: Date.now },
-        ABminus: { quantityInLiters: 0, lastUpdated: Date.now },
-        Oplus: { quantityInLiters: 0, lastUpdated: Date.now },
-        Ominus: { quantityInLiters: 0, lastUpdated: Date.now },
-      };
-    }
-
-    hospital.bloodBank.Aplus.quantityInLiters = bloodGroupQuantities.Aplus;
-    hospital.bloodBank.Aplus.lastUpdated = Date.now();
-
-    hospital.bloodBank.Aminus.quantityInLiters = bloodGroupQuantities.Aminus;
-    hospital.bloodBank.Aminus.lastUpdated = Date.now();
-
-    hospital.bloodBank.Bplus.quantityInLiters = bloodGroupQuantities.Bplus;
-    hospital.bloodBank.Bplus.lastUpdated = Date.now();
-
-    hospital.bloodBank.Bminus.quantityInLiters = bloodGroupQuantities.Bminus;
-    hospital.bloodBank.Bminus.lastUpdated = Date.now();
-
-    hospital.bloodBank.ABplus.quantityInLiters = bloodGroupQuantities.ABplus;
-    hospital.bloodBank.ABplus.lastUpdated = Date.now();
-
-    hospital.bloodBank.ABminus.quantityInLiters = bloodGroupQuantities.ABminus;
-    hospital.bloodBank.ABminus.lastUpdated = Date.now();
-
-    hospital.bloodBank.Oplus.quantityInLiters = bloodGroupQuantities.Oplus;
-    hospital.bloodBank.Oplus.lastUpdated = Date.now();
-
-    hospital.bloodBank.Ominus.quantityInLiters = bloodGroupQuantities.Ominus;
-    hospital.bloodBank.Ominus.lastUpdated = Date.now();
-
-    console.log('Saving hospital document');
-    await hospital.save();
-
-    console.log('Returning success response');
-    res.status(200).json({ message: 'Blood bank quantities updated successfully' });
-  } catch (error) {
-    console.error('Error updating blood bank quantities:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 export const getBloodBankDetails = async (req, res) => {
   try {
     const { hospitalId } = req.params;
-
-    // Find the hospital by ID and select the bloodBank data
     const hospital = await Hospital.findById(hospitalId).select('bloodBank');
 
     if (!hospital) {
@@ -638,6 +567,7 @@ export const getBloodBankDetails = async (req, res) => {
     }
 
     // Send the blood bank details in the response
+    console.log(hospital.bloodBank)
     res.status(200).json({
       bloodBank: hospital.bloodBank,
     });
@@ -647,3 +577,44 @@ export const getBloodBankDetails = async (req, res) => {
   }
 };
 
+export const makeDonationRequest = async (req, res) => {
+  try {
+    const { donorId } = req.params; // ID of the donor to whom the request is sent
+    const { receiverId, receiverName, bloodGroup, contactInfo, city } = req.body;
+    console.log(donorId);
+    console.log(receiverId, receiverName, bloodGroup, contactInfo, city );
+    // Validate if donorId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(donorId)) {
+      return res.status(400).json({ message: "Invalid donor ID." });
+    }
+
+    // Check if the donor exists
+    const donor = await Donor.findById(donorId);
+    if (!donor) {
+      return res.status(404).json({ message: "Donor not found." });
+    }
+
+    // Construct the request object to add to requestsReceived array
+    const newRequest = {
+      receiverId,
+      receiverName,
+      bloodGroup,
+      contactInfo,
+      city,
+      requestedAt: new Date(),
+      status: "pending",
+    };
+
+    // Push the request into the donor's requestsReceived array
+    donor.requestsReceived.push(newRequest);
+
+    // Save the updated donor document
+    await donor.save();
+
+    // Respond with a success message
+    res.status(201).json({ message: "Donation request sent successfully." });
+  } catch (error) {
+    console.error("Error sending donation request:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};

@@ -17,6 +17,10 @@ import Laboratories from "./pages/verified-donor/Laboratories.jsx";
 import HealthCareSignup from "./pages/authentication/HealthCareSignup.jsx";
 import HospitalHome from "./pages/verified-hospital/HospitalHome.jsx";
 import LabHome from "./pages/verified-lab/LabHome.jsx";
+import DonorDashboard from "./pages/verified-donor/DonorDashboard.jsx";
+import RHospitals from "./pages/verified-reciever/RHospitals.jsx"; 
+import RBloodBank from "./pages/verified-reciever/RBloodBank.jsx";
+import Requests from "./pages/verified-donor/Requests.jsx";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -30,7 +34,7 @@ const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user, role } = useAuthStore();
   if (isAuthenticated && user.isVerified && role) {
     if (role === "donor") {
-      return <Navigate to={`/donor/${user._id}`} replace />;
+      return <Navigate to={`/donor/${user._id}/donations`} replace />;
     } else if (role === "reciever") {
       return <Navigate to={`/user/${user._id}`} replace />;
     } else if (role === "Hospital" || role === "hospital") {
@@ -64,10 +68,10 @@ function App() {
           }
         />
         <Route
-          path="/donor/:donorId"
+          path="/donor/:donorId/donations"
           element={
             <ProtectedRoute>
-              <UserDashboard />
+              <DonorDashboard />
             </ProtectedRoute>
           }
         />
@@ -80,10 +84,42 @@ function App() {
           }
         />
         <Route
+          path="/donor/:donorId/hospitals"
+          element={
+            <ProtectedRoute>
+              <Hospitals />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/donor/:donorId/requests"
+          element={
+            <ProtectedRoute>
+              <Requests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/user/:recieverId"
           element={
             <ProtectedRoute>
               <RecieverHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:recieverId/hospitals"
+          element={
+            <ProtectedRoute>
+              <RHospitals />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:recieverId/bloodbank"
+          element={
+            <ProtectedRoute>
+              <RBloodBank />
             </ProtectedRoute>
           }
         />
