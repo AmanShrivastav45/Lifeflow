@@ -15,22 +15,29 @@ const Hospitals = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const { user, logout } = useAuthStore();
-  const recieverId = useParams().recieverId || null;
-  const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleDonationRequest = async (donorId, donorDetails) => {
+    try {
+      const requestData = {
+        receiverId: user._id,
+        receiverName: user.firstName,
+        bloodGroup: donorDetails.bloodGroup,
+        contactInfo: user.phone,
+        city: user.city,
+        donorId: donorDetails.donorId, 
+      };
+      await axios.post(
+        `http://localhost:5050/lifeflow/auth/hospital/${donorDetails.hospitalId}/request`,
+        requestData
+      );
+
+      toast.success("Donation request sent successfully.");
+    } catch (error) {
+      console.error("Error sending donation request:", error);
+      toast.error("Failed to send donation request.");
+    }
   };
 
-  const toggleProfileButton = () => {
-    setIsProfileButtonOpen(!isProfileButtonOpen);
-  };
-
-  const getNavLinkClass = ({ isActive }) =>
-    isActive
-      ? "text-white p-3 flex items-center justify-center h-full rounded-[4px]"
-      : "hover:text-white p-3 flex items-center justify-center h-full rounded-[4px] text-[#868686]";
 
   // Fetch all hospitals on component mount
   useEffect(() => {
@@ -115,6 +122,7 @@ const Hospitals = () => {
                     city={hospital.city}
                     bloodGroup={hospital.bloodGroup}
                     bloodBank={hospital.bloodBank}
+                    id={hospital._id}
                   />
                 ))
               )}

@@ -85,7 +85,7 @@ const Home = () => {
             Signup
           </Link>
           <Link
-            to="/login"
+            to="/about"
             className="h-12 w-[125px] text-white flex border border-red-900 items-center justify-center Geist px-2 text-xl bg-red-600 rounded-[7px]"
           >
             Try

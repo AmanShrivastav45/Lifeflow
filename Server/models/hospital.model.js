@@ -1,4 +1,25 @@
 import mongoose from "mongoose";
+const bloodGroupEnum = ["A+", "A-", "AB+", "AB-", "B+", "B-", "O+", "O-"];
+const RequestSchema = new mongoose.Schema(
+  {
+    receiverId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Reciever", // Assuming 'User' is the collection for receivers
+      required: true,
+    },
+    receiverName: { type: String, required: true },
+    bloodGroup: { type: String, enum: bloodGroupEnum, required: true },
+    contactInfo: { type: String, required: true },
+    city: { type: String, required: true },
+    requestedAt: { type: Date, default: Date.now },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+    }, // Status of the request
+  },
+  { _id: false } // Exclude `_id` for each request subdocument
+);
 
 const BloodBankEntrySchema = new mongoose.Schema({
   bloodType: {
@@ -84,6 +105,7 @@ const HospitalSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    requestsReceived: [RequestSchema],
   },
   { timestamps: true }
 );

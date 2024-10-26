@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { IoLocationSharp } from "react-icons/io5";
+import { useAuthStore } from "../../store/auth";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const Hospital = ({ name, address, city, bloodBank, distance }) => {
+const Hospital = ({ name, address, city, bloodBank, id }) => {
+  const { user } = useAuthStore();
+  const recieverId = useParams().recieverId || null;
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedBloodGroup, setSelectedBloodGroup] = useState("");
 
   const handleViewClick = () => {
     setModalOpen(true);
@@ -13,7 +19,6 @@ const Hospital = ({ name, address, city, bloodBank, distance }) => {
     setModalOpen(false);
   };
 
-  // Blood group display names
   const bloodGroupDisplay = {
     "A+": "A+",
     "A-": "A-",
@@ -24,11 +29,43 @@ const Hospital = ({ name, address, city, bloodBank, distance }) => {
     "AB+": "AB+",
     "AB-": "AB-",
   };
-  const bloodGroupDisplay2 = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
-  // Function to handle quantity changes
-  const handleRequest = () => {
-    toast.success("Request has been sent!");
+  const bloodGroupDisplay2 = [
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "O+",
+    "O-",
+    "AB+",
+    "AB-",
+  ];
+  
+  const handleClick = (bloodGroup) => {
+    setSelectedBloodGroup(bloodGroupDisplay2[bloodGroup]);
+    handleRequest(bloodGroupDisplay2[bloodGroup]);
+  };
+
+  const handleRequest = async (bloodGroup) => {
+    try {
+      const requestData = {
+        receiverId: user._id,
+        receiverName: user.firstName,
+        bloodGroup: bloodGroup,
+        contactInfo: user.phone,
+        city: user.city,
+      };
+      await axios.post(
+        `http://localhost:5050/lifeflow/auth/hospital/${id}/request`,
+        requestData
+      );
+
+      toast.success("Donation request sent successfully.");
+      setSelectedBloodGroup("");
+    } catch (error) {
+      console.error("Error sending donation request:", error);
+      toast.error("Failed to send donation request.");
+    }
   };
 
   return (
@@ -63,7 +100,6 @@ const Hospital = ({ name, address, city, bloodBank, distance }) => {
         </p>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70">
           <div className="rounded-lg p-6 w-[50%] bg-[#2e2e2e] border border-[#3e3e3e]">
@@ -95,9 +131,7 @@ const Hospital = ({ name, address, city, bloodBank, distance }) => {
                 >
                   <div
                     className={`h-[100px] rounded-[5px] flex items-center justify-center flex-col w-full ${
-                      bloodGroupDisplay2[bloodGroup].includes("+")
-                        ? "bg-green-600"
-                        : "bg-red-600"
+                      bloodGroupDisplay2[bloodGroup].includes("+") ? "bg-green-600" : "bg-red-600"
                     }`}
                   >
                     <h1 className="text-white text-center text-3xl font-semibold">
@@ -114,7 +148,7 @@ const Hospital = ({ name, address, city, bloodBank, distance }) => {
                     </div>
                   </div>
                   <button
-                    onClick={handleRequest}
+                    onClick={() => handleClick(bloodGroup)}
                     className="text-white px-2 py-1 my-2 text-center text-md bg-blue-600 rounded-[5px] w-[80px]"
                     aria-label="Request Blood"
                   >

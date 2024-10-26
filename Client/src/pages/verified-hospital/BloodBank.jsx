@@ -18,6 +18,7 @@ const BloodBank = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   const [selectedBloodType, setSelectedBloodType] = useState(bloodGroups[0]);
+
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
   const handleQuantityChange = (change) => {

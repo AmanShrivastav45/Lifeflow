@@ -40,6 +40,7 @@ router.post('/hospital/:hospitalId/bloodbank', addBloodBankDetails);
 router.get('/hospitals', getAllHospitals);
 router.get('/:hospitalId/bloodbank', getBloodBankDetails);
 router.post("/donor/:donorId/request", makeDonationRequest);
+router.post("/hospital/:hospitalId/request", makeDonationRequest);
 router.get('/donors/:donorId/requests', getDonorRequests);
 router.get("/donors/donations/filter", async (req, res) => {
   const { bloodGroup, city, donationType } = req.query;

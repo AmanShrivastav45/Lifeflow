@@ -30,7 +30,7 @@ const RequestSchema = new mongoose.Schema(
   {
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Assuming 'User' is the collection for receivers
+      ref: "Reciever", // Assuming 'User' is the collection for receivers
       required: true,
     },
     receiverName: { type: String, required: true },

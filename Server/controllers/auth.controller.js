@@ -641,3 +641,42 @@ export const getDonorRequests = async (req, res) => {
       res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 };
+
+export const makeDonationRequesttoHospital = async (req, res) => {
+  try {
+    const { hospitalId } = req.params; // ID of the donor to whom the request is sent
+    console.log("hospitalId", hospitalId)
+    const { receiverId, receiverName, bloodGroup, contactInfo, city } = req.body;
+    console.log(receiverId, receiverName, bloodGroup, contactInfo, city );
+
+    if (!mongoose.Types.ObjectId.isValid(hospitalId)) {
+      return res.status(400).json({ message: "Invalid Hospital ID." });
+    }
+
+    const hospital = await Donor.findById(hospitalId);
+    if (!hospital) {
+      return res.status(404).json({ message: "Hospital not found." });
+    }
+
+    // Construct the request object to add to requestsReceived array
+    const newRequest = {
+      receiverId,
+      receiverName,
+      bloodGroup,
+      contactInfo,
+      city,
+      requestedAt: new Date(),
+      status: "pending",
+    };
+
+    // Push the request into the donor's requestsReceived array
+    hospital.requestsReceived.push(newRequest);
+    // Save the updated donor document
+    await hospital.save();
+    // Respond with a success message
+    res.status(201).json({ message: "Donation request sent successfully." });
+  } catch (error) {
+    console.error("Error sending donation request:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};

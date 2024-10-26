@@ -21,6 +21,7 @@ import DonorDashboard from "./pages/verified-donor/DonorDashboard.jsx";
 import RHospitals from "./pages/verified-reciever/RHospitals.jsx"; 
 import RBloodBank from "./pages/verified-reciever/RBloodBank.jsx";
 import Requests from "./pages/verified-donor/Requests.jsx";
+import About from "./pages/About.jsx";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -188,6 +189,7 @@ function App() {
           }
         />
         <Route path="/verify-email" element={<Verification />} />
+        <Route path="/about" element={<About />} />
         <Route
           path="/forgot-password"
           element={

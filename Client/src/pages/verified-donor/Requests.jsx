@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import DonorNav from "./DonorNav";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import NewLoader from "../../components/NewLoader";
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
@@ -25,7 +26,7 @@ const Requests = () => {
     fetchRequests();
   }, [donorId]);
 
-  if (loading) return <p className="text-center text-white mt-10">Loading requests...</p>;
+  if (loading) return <NewLoader/>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
