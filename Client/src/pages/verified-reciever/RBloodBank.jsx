@@ -91,15 +91,15 @@ const RBloodBank = () => {
   const handleDonationRequest = async (donorId, donorDetails) => {
     try {
       const requestData = {
-        receiverId: user.id,
-        receiverName: user.name,
+        receiverId: user._id,
+        receiverName: user.firstName,
         bloodGroup: donorDetails.bloodGroup,
-        contactInfo: user.contactInfo,
+        contactInfo: user.phone,
         city: user.city,
+        donorId: donorDetails.donorId, 
       };
-
       await axios.post(
-        `http://localhost:5050/lifeflow/auth/donors/${donorId}/request`,
+        `http://localhost:5050/lifeflow/auth/donor/${donorDetails.donorId}/request`,
         requestData
       );
 

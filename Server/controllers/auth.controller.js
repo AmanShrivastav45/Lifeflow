@@ -10,6 +10,7 @@ import multer from "multer";
 import { MongoClient } from "mongodb";
 import { GridFSBucket } from "mongodb";
 import { Lab } from "../models/lab.model.js";
+import mongoose from "mongoose";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -588,7 +589,6 @@ export const makeDonationRequest = async (req, res) => {
       return res.status(400).json({ message: "Invalid donor ID." });
     }
 
-    // Check if the donor exists
     const donor = await Donor.findById(donorId);
     if (!donor) {
       return res.status(404).json({ message: "Donor not found." });
@@ -616,5 +616,28 @@ export const makeDonationRequest = async (req, res) => {
   } catch (error) {
     console.error("Error sending donation request:", error);
     res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const getDonorRequests = async (req, res) => {
+  try {
+      const { donorId } = req.params;
+      console.log("donorId", donorId);
+
+      // Try retrieving the entire donor document for debugging purposes
+      const donor = await Donor.findById(donorId).populate({
+          path: 'requestsReceived',
+          select: 'firstName lastName' // Select specific fields to return from the `receiverId` reference
+      });
+
+      if (!donor) {
+          return res.status(404).json({ success: false, message: "Donor not found" });
+      }
+
+      // Send back only the requestsReceived field if available
+      res.status(200).json({ success: true, data: donor.requestsReceived || [] });
+  } catch (error) {
+      console.error("Error fetching donor requests:", error); // Add more details for debugging
+      res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 };
