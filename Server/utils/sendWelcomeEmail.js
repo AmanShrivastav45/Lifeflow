@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { WELCOME_TEMPLATE } from "../templates/templates.js";
 
-export const sendWelcomeEmail = async (firstName, email) => {
+export const sendWelcomeEmail = async (name, email) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -15,10 +15,10 @@ export const sendWelcomeEmail = async (firstName, email) => {
     });
 
     const mailOptions = {
-      from: '"CodeRoom Playground" <coderoom.playground@gmail.com>',
+      from: '"Lifeflow" <shivamlifeflow07@gmail.com>',
       to: email,
-      subject: "Welcome to Coderoom Playground",
-      html: WELCOME_TEMPLATE.replace("{firstName}", firstName),
+      subject: "Welcome to Lifeflow",
+      html: WELCOME_TEMPLATE.replace("{name}", name),
     };
 
     await transporter.sendMail(mailOptions);

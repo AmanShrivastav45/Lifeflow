@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { BiHide, BiShow } from "react-icons/bi";
-import { IoCheckmarkCircleSharp, IoCloseCircle } from "react-icons/io5";
-import { MdOutlineKeyboardCommandKey } from "react-icons/md";
-import Loader from "../../components/Loader.jsx";
-import Astronaut from "../../style/Astronaut.jsx";
-import FloatingShape from "../../style/FloatingShapes.jsx";
-import { useAuthStore } from "../../store/auth.js";
-import "../../fonts/stylesheet.css";
+import { IoCheckmarkCircleSharp } from "react-icons/io5";
 import logo from "../../assets/logo.png";
+import Loader from "../components/Loader.jsx";
+import { useAuthStore } from "../../store/auth.js";
+import { CITY } from "../constants/city";
+import { BLOODGROUP } from "../constants/bloodGroup";
+import { GENDER } from "../constants/gender";
+import { CONSTANTS } from "../../../../constants.js";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [quoteIndex, setQuoteIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+
+  const [role, setRole] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
@@ -27,69 +27,11 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { signup, error, isLoading } = useAuthStore();
-  const [selectedRole, setSelectedRole] = useState("donor");
 
-  const toggleRole = (selectedRole) => {
-    setSelectedRole(selectedRole);
-  };
-  const quotes = [
-    "Blood donation is the gift of life. Your simple act can save lives and inspire hope.",
-    "Every blood donor is a hero, silently saving lives and giving patients another chance at life.",
-    "One donation can save three lives. It's a small act of kindness with massive impact.",
-    "Donating blood costs nothing, but it can mean everything to someone who desperately needs it.",
-    "Blood donors are lifesavers. Their generosity helps hospitals, patients, and families in times of crisis.",
-  ];
-  useEffect(() => {
-    // Quote change logic
-    const quoteInterval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setQuoteIndex((prevIndex) => (prevIndex + 1) % quotes.length);
-        setFade(true);
-      }, 1000);
-    }, 5000);
-
-    return () => {
-      clearInterval(quoteInterval);
-    };
-  }, []);
-
-  const [nameErrorColor, setNameErrorColor] = useState("text-[#303030]");
-  const [nameLengthErrorColor, setNameLengthErrorColor] =
-    useState("text-[#303030]");
   const [passwordLengthErrorColor, setPasswordLengthErrorColor] =
     useState("text-[#303030]");
   const [passwordMatchErrorColor, setPasswordMatchErrorColor] =
     useState("text-[#303030]");
-  const [firstNameRingColor, setFirstNameRingColor] =
-    useState("border-[#2A2A2A]");
-  const [lastNameRingColor, setLastNameRingColor] =
-    useState("border-[#2A2A2A]");
-  const [pinCodeRingColor, setPinCodeRingColor] = useState("border-[#2A2A2A]");
-  const [passwordRingColor, setPasswordRingColor] =
-    useState("border-[#2A2A2A]");
-  const [confirmPasswordRingColor, setConfirmPasswordRingColor] =
-    useState("border-[#2A2A2A]");
-  const [bloodGroupError, setBloodGroupError] = useState(false);
-  const [genderError, setGenderError] = useState(false);
-  const [cityError, setCityError] = useState(false);
-  const [pincodeError, setPincodeError] = useState(false);
-
-  useEffect(() => {
-    if (firstName.length > 0 && firstName.length >= 6) {
-      setNameLengthErrorColor("text-green-600");
-    } else {
-      setNameLengthErrorColor("text-[#303030]");
-    }
-  }, [firstName]);
-
-  useEffect(() => {
-    if (lastName.length > 0 && lastName.length >= 6) {
-      setNameLengthErrorColor("text-green-600");
-    } else {
-      setNameLengthErrorColor("text-[#303030]");
-    }
-  }, [lastName]);
 
   useEffect(() => {
     if (password.length > 0 && password.length >= 8) {
@@ -109,24 +51,20 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    var firstnameHasError = false;
-    var lastnameHasError = false;
-    var passwordHasError = false;
 
-    if (firstName.length === 0) {
-      setNameLengthErrorColor("text-red-400");
-      setNameErrorColor("text-red-400");
-      firstnameHasError = true;
-    } else {
-      setNameLengthErrorColor("text-green-600");
-    }
-
-    if (lastName.length === 0) {
-      setNameLengthErrorColor("text-red-400");
-      setNameErrorColor("text-red-400");
-      lastnameHasError = true;
-    } else {
-      setNameLengthErrorColor("text-green-600");
+    if (
+      name.length === 0 ||
+      email.length === 0 ||
+      phone.length === 0 ||
+      pincode.length === 0 ||
+      password.length === 0 ||
+      confirmPassword.length === 0 ||
+      !Object.values(CITY).includes(city) ||
+      !Object.values(BLOODGROUP).includes(bloodGroup) ||
+      !Object.values(GENDER).includes(gender)
+    ) {
+      toast.error("Please fill all the details!");
+      return;
     }
 
     if (password.length === 0) {
@@ -141,54 +79,27 @@ const Signup = () => {
       }
     }
 
-    if (firstnameHasError) setFirstNameRingColor("border-red-500");
-    if (lastnameHasError) setLastNameRingColor("border-red-500");
-    if (passwordHasError) setPasswordRingColor("border-red-500");
-    if (passwordHasError || firstnameHasError || lastnameHasError) return;
-
     if (password !== confirmPassword) {
       setPasswordMatchErrorColor("text-red-400");
-      setConfirmPasswordRingColor("border-red-500");
-      return;
-    }
-
-    if (!bloodGroup) {
-      setBloodGroupError(true);
-      return;
-    }
-
-    if (!gender) {
-      setGenderError(true);
-      return;
-    }
-
-    if (!city) {
-      setCityError(true);
-      return;
-    }
-
-    if (!pincode) {
-      setPincodeError(true);
       return;
     }
 
     try {
       await signup(
-        firstName,
-        lastName,
+        role,
+        name,
         email,
         phone,
-        password,
-        selectedRole,
         bloodGroup,
         gender,
         city,
-        pincode
+        pincode,
+        password
       );
       navigate("/verify-email");
     } catch (error) {
       console.error(error);
-      toast.error("Error signing up");
+      toast.error(error);
     }
   };
 
@@ -196,128 +107,98 @@ const Signup = () => {
     setShowPassword(!showPassword);
   };
 
-  return (
-    <div className="min-h-screen h-screen w-full flex items-center justify-center">
-      <div className="h-full w-full rounded-[7px] flex flex-row">
-        <div className="h-full lg:w-[50%] bg-[#1e1e1e] flex items-center justify-center">
-          <div className="relative lg:h-[340px] lg:w-[540px] mb-24 flex flex-col items-center justify-center">
-            <img src={logo} className="h-96 mb-8" />
-            <h1 className="Apercu-Bold text-4xl text-white">LIFEFLOW</h1>
-          </div>
-          <div className="absolute top-10 left-10">
-            <MdOutlineKeyboardCommandKey className="mr-2 text-white text-4xl" />
-          </div>
-          <div className="Geist text-gray-300 absolute bottom-16 ">
-            <p
-              className={`md:text-base lg:text-xl px-8 sm:px-2 mt-3 text-sm Geist text-center text-gray-300 fade-text ${
-                fade ? "" : "fade-out"
-              }`}
+  const UserType = () => {
+    return (
+      <div className="w-full flex justify-center text-base">
+        <div className="w-[360px] sm:w-[380px] bg-white rounded-[8px] h-auto shadow-xl border border-gray-300 p-5 sm:p-6 sm:mt-10 py-0 pb-8">
+          <h1 className="my-6 mb-4 text-center sm:mt-0 text-lg font-semibold text-black">
+            How Would You Like to Proceed?
+          </h1>
+          <div className="w-full flex justify-center">
+            <button
+              onClick={() => setRole(CONSTANTS.ROLES.RECEIVER)}
+              className="h-9 w-[45%] mr-1 text-sm font-semibold bg-[#FF6C37] text-white rounded-[5px] flex items-center justify-center"
             >
-              {quotes[quoteIndex]}
-            </p>
+              ReceIver
+            </button>
+            <button
+              onClick={() => setRole(CONSTANTS.ROLES.DONOR)}
+              className="h-9 w-[45%] ml-1 text-sm font-semibold bg-[#FF6C37] text-white rounded-[5px] flex items-center justify-center"
+            >
+              Donor
+            </button>
           </div>
+          <h3 className="text-xs text-gray-500 my-5 sm:mb-0 w-full flex justify-center">
+            Are you a Healthcare owner?
+            <Link to="/healthcare-signup" className="font-semibold text-black">
+              &nbsp;&nbsp;Sign In &nbsp;
+            </Link>
+          </h3>
         </div>
-        <div className="w-full relative lg:w-[50%] h-full bg-[#09090B] overflow-hidden">
-          <FloatingShape size="w-64 h-64" top="-5%" left="10%" delay={0} />
-          <FloatingShape size="w-48 h-48" top="70%" left="80%" delay={3} />
-          <FloatingShape size="w-40 h-40" top="40%" left="-10%" delay={1} />
-          <Link
-            to="/login"
-            className="absolute Geist top-10 right-10 text-gray-200"
-          >
-            Login
-          </Link>
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full flex items-center justify-center mb-32 sm:mb-0 sm:justify-start flex-col h-full">
+      <div className="text-black fixed top-5 space-x-6 text-sm right-10">
+        <Link to="/">Home</Link>
+        <Link to="/login">Log In</Link>
+      </div>
+      <div className="w-full sm:hidden flex items-center justify-center my-6">
+        <img src={logo} className="h-12 w-12" />
+      </div>
+      {!role ? (
+        <UserType />
+      ) : (
+        <div className="w-[360px] sm:w-[380px] bg-white rounded-[8px] h-auto shadow-xl border border-gray-300 p-5 sm:p-6 sm:mt-10 py-0">
           <form
             onSubmit={handleSignup}
-            className="py-2 w-full h-full flex items-center justify-center flex-col"
+            className="w-full h-full flex items-center justify-center flex-col"
           >
-            <h1 className="mb-6 text-4xl Geist-semibold text-white">
-              Create an account
+            <h1 className="my-6 sm:mt-0 text-xl text-center font-semibold text-black">
+              Create Lifeflow account
             </h1>
-            <div className="relative mb-4 Geist border w-[360px] md:w-[420px] border-[#2A2A2A] bg-[#09090b] outline-none h-12 text-base rounded-[7px] flex">
-              <div
-                className={`absolute transition-all duration-300 ease-in-out ${
-                  selectedRole === "donor" ? "left-0" : "left-[50%]"
-                } w-[50%] h-full bg-[#1e1e1e] rounded-[6px]`}
-              />
-              <button
-                onClick={() => toggleRole("donor")}
-                className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
-                  selectedRole === "donor" ? "text-[#d6d6d6]" : "text-[#68686F]"
-                }`}
-              >
-                Donor
-              </button>
-              <button
-                onClick={() => toggleRole("reciever")}
-                className={`relative z-10 py-2 px-4 rounded-[6px] w-[50%] items-center transition-colors duration-300 ease-in-out ${
-                  selectedRole === "reciever"
-                    ? "text-[#d6d6d6]"
-                    : "text-[#68686F]"
-                }`}
-              >
-                Reciever
-              </button>
-            </div>
-            <div
-              className=" mb-4 flex w-[360px] md:w-[420px]"
-              style={{ zIndex: 1001 }}
-            >
+            <div className="space-y-4 flex flex-col w-full">
               <input
                 maxLength={16}
                 type="text"
-                style={{ zIndex: 1001 }}
-                placeholder="Enter your first name"
-                className={`Geist border w-[50%] caret-white mr-1 placeholder:text-[#68686F] bg-[#09090b] ${firstNameRingColor} focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
-                onChange={(e) => setFirstName(e.target.value)}
-                value={firstName}
-                required
+                placeholder="Enter your username"
+                className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center`}
+                onChange={(e) => setName(e.target.value)}
+                value={name}
               />
               <input
-                maxLength={16}
+                maxLength={30}
                 type="text"
-                style={{ zIndex: 1001 }}
-                placeholder="Enter your last name"
-                className={`Geist border  w-[50%] caret-white ml-1 placeholder:text-[#68686F] bg-[#09090b] ${lastNameRingColor} focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
-                onChange={(e) => setLastName(e.target.value)}
-                value={lastName}
-                required
-              />
-            </div>
-            <div style={{ zIndex: 1001 }} className="px-1 mb-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                style={{ zIndex: 1001 }}
-                className="Geist border w-[360px] md:w-[420px] border-[#2A2A2A] caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 mb-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center"
-                value={email}
+                placeholder="Enter your email address"
+                className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center`}
                 onChange={(e) => setEmail(e.target.value)}
-                required
+                value={email}
               />
               <input
+                maxLength={10}
                 type="text"
                 placeholder="Enter your phone number"
-                style={{ zIndex: 1001 }}
-                className="Geist border w-[360px] md:w-[420px] border-[#2A2A2A] caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center"
+                className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center`}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    setPhone(value);
+                  }
+                }}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
               />
             </div>
-            <div
-              style={{ zIndex: 1001 }}
-              className="w-[360px] md:w-[420px] mb-4 flex"
-            >
+            <div className="w-full flex my-4">
               <select
-                style={{ zIndex: 1001 }}
                 value={bloodGroup}
                 onChange={(e) => {
                   setBloodGroup(e.target.value);
-                  setBloodGroupError(false);
                 }}
-                className="Geist border border-[#2A2A2A] w-[50%] mr-1 caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-3 outline-none h-12 text-base text-[#5D5D63] rounded-[7px] flex items-center justify-center"
+                className="border border-gray-400 w-[50%] mr-1 caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center"
               >
-                <option value="">Blood group</option>
+                <option hidden>Blood group</option>
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
                 <option value="AB+">AB+</option>
@@ -327,137 +208,111 @@ const Signup = () => {
                 <option value="O+">O+</option>
                 <option value="O-">O-</option>
               </select>
-              {bloodGroupError && (
-                <div className="text-red-400 mb-2">
-                  Please select a blood group
-                </div>
-              )}
               <select
-                style={{ zIndex: 1001 }}
                 value={gender}
                 onChange={(e) => {
                   setGender(e.target.value);
-                  setGenderError(false);
                 }}
-                className="Geist border border-[#2A2A2A] w-[50%] ml-1 caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none h-12 text-base text-[#5D5D63] rounded-[7px] flex items-center justify-center"
+                className="border border-gray-400 w-[50%] ml-1 caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center"
               >
-                <option value="">Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+                <option hidden>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
               </select>
-              {genderError && (
-                <div className="text-red-400 mb-2">Please select a gender</div>
-              )}
             </div>
-            <div
-              style={{ zIndex: 1001 }}
-              className="w-[360px] md:w-[420px] mb-4 flex"
-            >
+            <div className="w-full flex">
               <select
-                style={{ zIndex: 1001 }}
                 value={city}
                 onChange={(e) => {
                   setCity(e.target.value);
-                  setCityError(false);
                 }}
-                className="Geist border border-[#2A2A2A] w-[50%] mr-1 caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-3 outline-none h-12 text-base text-[#5D5D63] rounded-[7px] flex items-center justify-center"
+                className="border border-gray-400 w-[50%] mr-1 caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center"
               >
-                <option value="">Select your city</option>
-                <option value="Borivali">Borivali</option>
-                <option value="Andheri">Andheri</option>
-                <option value="Bandra">Bandra</option>
-                <option value="Bhayandar">Bhayandar</option>
-                <option value="Vasai">Vasai</option>
-                <option value="Virar">Virar</option>
+                <option hidden>Select your city</option>
+                <option value="andheri">Andheri</option>
+                <option value="bandra">Bandra</option>
+                <option value="bhayandar">Bhayandar</option>
+                <option value="borivali">Borivali</option>
+                <option value="vasai">Vasai</option>
+                <option value="virar">Virar</option>
               </select>
-              {cityError && (
-                <div className="text-red-400 mb-2">Please select a city</div>
-              )}
               <input
                 maxLength={6}
                 type="text"
-                style={{ zIndex: 1001 }}
                 placeholder="Enter your pincode"
-                className={`Geist border  w-[50%] caret-white ml-1 placeholder:text-[#68686F] bg-[#09090b] ${pinCodeRingColor} focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
-                onChange={(e) => setPincode(e.target.value)}
+                className={`border border-gray-400 w-[50%] ml-1 caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center`}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    setPincode(value);
+                  }
+                }}
                 value={pincode}
-                required
               />
-              {pincodeError && (
-                <div className="text-red-400 mb-2">Please enter a pincode</div>
-              )}
             </div>
-            <div style={{ zIndex: 1001 }}>
+            <div className="mt-4 w-full">
               <div className="relative">
                 <input
                   maxLength={32}
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  style={{ zIndex: 1001 }}
-                  className={`Geist border w-[360px] md:w-[420px] ${passwordRingColor} caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
+                  className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute right-4 top-3 text-xl text-gray-400"
+                  className="absolute right-3 top-2.5 text-lg text-gray-300"
                 >
                   {showPassword ? <BiShow /> : <BiHide />}
                 </button>
               </div>
               <div
-                className={`${passwordLengthErrorColor} mt-3 flex items-center`}
+                className={`${passwordLengthErrorColor} mt-3 text-gray-400 text-xs flex items-center`}
               >
                 <IoCheckmarkCircleSharp />
-                <h3 className="ml-2 Geist text-sm flex">
+                <h3 className="ml-1 flex">
                   Password must be at least 8 characters long.
                 </h3>
               </div>
               <input
                 type="password"
                 placeholder="Confirm your password"
-                style={{ zIndex: 1001 }}
-                className={`Geist border w-[360px] md:w-[420px] mt-3 ${confirmPasswordRingColor} caret-white placeholder:text-[#68686F] bg-[#09090B] focus:border-gray-300 px-4 outline-none h-12 text-base text-white rounded-[7px] flex items-center justify-center`}
+                className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center mt-3`}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                required
               />
               <div
-                className={`${passwordMatchErrorColor} mt-3 flex items-center`}
+                className={`${passwordMatchErrorColor} text-gray-400 text-xs mt-3 flex items-center`}
               >
                 <IoCheckmarkCircleSharp />
-                <h3 className="ml -2 Geist text-left text-sm flex">
-                  Passwords must match.
-                </h3>
+                <h3 className="ml-1 text-left flex">Passwords must match.</h3>
               </div>
             </div>
-
             <button
               disabled={isLoading}
               type="submit"
-              className="h-12 mt-4 w-[360px] md:w-[420px] text-base Geist-semibold bg-gray-100 text-[#09090B] rounded-[7px] flex items-center justify-center"
+              className="h-9 mt-4 w-full text-sm font-semibold bg-[#FF6C37] text-white rounded-[5px] flex items-center justify-center"
             >
-              {isLoading ? <Loader size={24} /> : "Sign Up"}
+              {isLoading ? <Loader size={18} /> : "Create Account"}
             </button>
-            <h3 className="Geist text-base mt-4 text-[#68686F]">
-              Already a member?{" "}
-              <Link to="/login" className="Geist-Semibold text-gray-300">
-                &nbsp;Log In &nbsp;
-              </Link>
-              or a Healthcare owner?
+            <div className="w-full my-3 text-gray-400 justify-center text-xs flex">
+              or
+            </div>
+            <h3 className="text-xs text-gray-500 mb-6 sm:mb-0">
+              Are you a Healthcare owner?
               <Link
                 to="/healthcare-signup"
-                className="Geist-Semibold text-gray-300"
+                className="font-semibold text-black"
               >
-                &nbsp;Sign In &nbsp;
+                &nbsp;&nbsp;Sign In &nbsp;
               </Link>
             </h3>
           </form>
         </div>
-      </div>
+      )}
     </div>
   );
 };

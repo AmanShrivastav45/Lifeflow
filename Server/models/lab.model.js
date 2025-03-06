@@ -1,6 +1,56 @@
 import mongoose from "mongoose";
+import { CONSTANTS } from "../../constants.js";
 
-const LabSchema = new mongoose.Schema(
+const AppointmentSchema = new mongoose.Schema(
+  {
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Donor",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 15,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    timeslot: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(CONSTANTS.APPOINTMENT_STATUS), 
+      default: CONSTANTS.APPOINTMENT_STATUS.PENDING,
+    },
+  },
+  { timestamps: true } 
+);
+
+export const Appointments = mongoose.model("Appointment", AppointmentSchema);
+
+const LaboratorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -41,9 +91,7 @@ const LabSchema = new mongoose.Schema(
     city: {
       type: String,
       required: true,
-      trim: true,
-      minlength: 3,
-      maxlength: 50,
+      enum: Object.values(CONSTANTS.CITY),
     },
     pincode: {
       type: String,
@@ -52,18 +100,15 @@ const LabSchema = new mongoose.Schema(
       minlength: 6,
       maxlength: 6,
     },
+    appointments: [AppointmentSchema],
     lastLogin: { type: Date, default: Date.now },
     isVerified: { type: Boolean, default: false },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
     verificationTokenExpiresAt: Date,
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   { timestamps: true }
 );
 
-export const Lab = mongoose.model("Lab", LabSchema);
+export const Laboratory = mongoose.model("Laboratory", LaboratorySchema);

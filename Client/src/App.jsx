@@ -1,27 +1,27 @@
 import { useEffect } from "react";
-import { Navigate, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Login from "./pages/authentication/Login.jsx";
-import Signup from "./pages/authentication/Signup.jsx";
-import Verification from "./pages/authentication/Verification.jsx";
-import ResetPassword from "./pages/authentication/ResetPassword.jsx";
-import ForgotPasswordPage from "./pages/authentication/ForgotPasswordPage.jsx";
-import Loader from "./components/Loader";
-import { useAuthStore } from "./store/auth.js";
-import Home from "./pages/Home.jsx";
-import UserDashboard from "./pages/verified-donor/DonorDashboard.jsx";
-import RecieverHome from "./pages/verified-reciever/RecieverHome.jsx";
-import BloodBank from "./pages/verified-donor/BloodBank.jsx";
-import Hospitals from "./pages/verified-donor/Hospitals.jsx";
-import Laboratories from "./pages/verified-donor/Laboratories.jsx";
-import HealthCareSignup from "./pages/authentication/HealthCareSignup.jsx";
-import HospitalHome from "./pages/verified-hospital/HospitalHome.jsx";
-import LabHome from "./pages/verified-lab/LabHome.jsx";
-import DonorDashboard from "./pages/verified-donor/DonorDashboard.jsx";
-import RHospitals from "./pages/verified-reciever/RHospitals.jsx"; 
-import RBloodBank from "./pages/verified-reciever/RBloodBank.jsx";
-import Requests from "./pages/verified-donor/Requests.jsx";
-import About from "./pages/About.jsx";
+import Landing from "./pages/common/Landing";
+import HealthCareSignup from "./pages/authentication/HealthCareSignup";
+import Signup from "./pages/authentication/Signup";
+import Login from "./pages/authentication/Login";
+import Verification from "./pages/authentication/Verification";
+import AddDonation from "./pages/modals/AddDonation";
+import { CONSTANTS } from "../../constants.js";
+
+// Home Pages
+import Laboratory from "./pages/home/Laboratory";
+import Hopsital from "./pages/home/Hopsital";
+import Receiver from "./pages/home/Receiver";
+import Donor from "./pages/home/Donor";
+import Loader from "./pages/components/Loader";
+import { useAuthStore } from "./store/auth";
+import Hospitals from "./pages/users/receiver/Hospitals.jsx";
+import DonorProfile from "./profile/DonorProfile.jsx";
+import ReceiverProfile from "./profile/ReceiverProfile.jsx";
+import HospitalProfile from "./profile/HospitalProfile.jsx";
+import LaboratoryProfile from "./profile/LaboratoryProfile.jsx";
+import About from "./pages/common/About.jsx";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -34,14 +34,14 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user, role } = useAuthStore();
   if (isAuthenticated && user.isVerified && role) {
-    if (role === "donor") {
-      return <Navigate to={`/donor/${user._id}/donations`} replace />;
-    } else if (role === "reciever") {
-      return <Navigate to={`/user/${user._id}`} replace />;
-    } else if (role === "Hospital" || role === "hospital") {
+    if (role === CONSTANTS.ROLES.DONOR) {
+      return <Navigate to={`/donor/${user._id}`} replace />;
+    } else if (role === CONSTANTS.ROLES.RECEIVER) {
+      return <Navigate to={`/receiver/${user._id}`} replace />;
+    } else if (role === CONSTANTS.ROLES.HOSPITAL) {
       return <Navigate to={`/hospital/${user._id}`} replace />;
-    } else if (role === "Laboratory" || role === "laboratory") {
-      return <Navigate to={`/lab/${user._id}`} replace />;
+    } else if (role === CONSTANTS.ROLES.LABORATORY) {
+      return <Navigate to={`/laboratory/${user._id}`} replace />;
     } else {
       <Navigate to="/" replace />;
     }
@@ -52,6 +52,13 @@ const RedirectAuthenticatedUser = ({ children }) => {
 function App() {
   const { isCheckingAuth, checkAuth } = useAuthStore();
   useEffect(() => {
+    console.log(
+      `%c${"LIFEFLOW 1.0"}`,
+      "font-size:72px; color: #00ccff; font-weight: bold; "
+    );
+  }, []);
+
+  useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
@@ -59,168 +66,119 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <RedirectAuthenticatedUser>
-              <Home />
-            </RedirectAuthenticatedUser>
-          }
+      <div className="bg-gradient-to-b Inter from-white to-[#FAECCA] w-full fixed h-screen min-h-screen flex items-center justify-center">
+        <Routes>
+          {/* Landing */}
+          <Route path="/" element={
+              <RedirectAuthenticatedUser>
+                <Landing />
+              </RedirectAuthenticatedUser>
+            }
+          />
+          <Route path="/about" element={<About/>}/>
+          {/* ---------------- Authentication Pages ---------------- */}
+            <Route path="/login" element={
+                <RedirectAuthenticatedUser>
+                  <Login />
+                </RedirectAuthenticatedUser>
+              }
+            />
+            <Route path="/signup" element={
+                <RedirectAuthenticatedUser>
+                  <Signup />
+                </RedirectAuthenticatedUser>
+              }
+            />
+            <Route path="/healthcare-signup" element={
+                <RedirectAuthenticatedUser>
+                  <HealthCareSignup />
+                </RedirectAuthenticatedUser>
+              }
+            />
+            <Route path="/verify-email" element={<Verification />} />
+
+          {/* ---------------- Authentication Pages Ends ---------------- */}
+
+          {/* ---------------- Home Pages ---------------- */}
+            
+            <Route path="/receiver/:userId" element={
+                <ProtectedRoute>
+                  <Receiver />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/donor/:userId" element={
+                <ProtectedRoute>
+                  <Donor />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/laboratory/:userId" element={
+                <ProtectedRoute>
+                  <Laboratory />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/hospital/:userId" element={
+              <ProtectedRoute>
+                <Hopsital />
+              </ProtectedRoute>
+            }
+            />
+            
+          {/* ---------------- Home Pages Ends ---------------- */}
+          
+          {/* ---------------- Profile Pages ---------------- */}
+
+          <Route path="/receiver/:userId/profile" element={
+              <ProtectedRoute>
+                  <ReceiverProfile />
+              </ProtectedRoute>
+          } />
+          <Route path="/donor/:userId/profile" element={
+              <ProtectedRoute>
+                <DonorProfile />
+              </ProtectedRoute>
+            } />
+          <Route path="/laboratory/:userId/profile" element={
+              <ProtectedRoute>
+                <LaboratoryProfile />
+              </ProtectedRoute>
+            }/>
+          <Route path="/hospital/:userId/profile" element={
+              <ProtectedRoute>
+                <HospitalProfile />
+              </ProtectedRoute>
+          }/>
+
+          {/* ---------------- Profile Pages End---------------- */}
+
+          <Route path="/receiver/:userId/hospitals" element={
+              <ProtectedRoute>
+                <Hospitals />
+              </ProtectedRoute>
+            }
+          />
+
+
+        </Routes>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={10}
+          containerClassName=""
+          containerStyle={{}}
+          toastOptions={{
+            style: {
+              zIndex: 20000,
+              border: "1px solid #D1D5DC",
+              borderRadius: "4px",
+              height: "35px",
+              fontSize: "12px",
+            },
+          }}
         />
-        <Route
-          path="/donor/:donorId/donations"
-          element={
-            <ProtectedRoute>
-              <DonorDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/donor/:donorId/bloodbank"
-          element={
-            <ProtectedRoute>
-              <BloodBank />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/donor/:donorId/hospitals"
-          element={
-            <ProtectedRoute>
-              <Hospitals />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/donor/:donorId/requests"
-          element={
-            <ProtectedRoute>
-              <Requests />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:recieverId"
-          element={
-            <ProtectedRoute>
-              <RecieverHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:recieverId/hospitals"
-          element={
-            <ProtectedRoute>
-              <RHospitals />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:recieverId/bloodbank"
-          element={
-            <ProtectedRoute>
-              <RBloodBank />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/hospital/:hospitalId"
-          element={
-            <ProtectedRoute>
-              <HospitalHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/lab/:labId"
-          element={
-            <ProtectedRoute>
-              <LabHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:recieverId/bloodbank"
-          element={
-            <ProtectedRoute>
-              <BloodBank />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/:recieverId/hospitals"
-          element={
-            <ProtectedRoute>
-              <Hospitals />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <RedirectAuthenticatedUser>
-              <Signup />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route
-          path="/healthcare-signup"
-          element={
-            // <RedirectAuthenticatedUser>
-              <HealthCareSignup />
-            // </RedirectAuthenticatedUser>
-          }
-        />
-        <Route
-          path="/reset"
-          element={
-            <RedirectAuthenticatedUser>
-              <ResetPassword />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <RedirectAuthenticatedUser>
-              <Login />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route path="/verify-email" element={<Verification />} />
-        <Route path="/about" element={<About />} />
-        <Route
-          path="/forgot-password"
-          element={
-            <RedirectAuthenticatedUser>
-              <ForgotPasswordPage />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route
-          path="/reset-password/:token"
-          element={
-            <RedirectAuthenticatedUser>
-              <ResetPassword />
-            </RedirectAuthenticatedUser>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        containerClassName=""
-        containerStyle={{}}
-        toastOptions={{
-          style: {
-            zIndex: 20000,
-            borderRadius: "5px",
-          },
-        }}
-      />
+      </div>
     </>
   );
 }

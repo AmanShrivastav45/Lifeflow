@@ -1,25 +1,28 @@
 import mongoose from "mongoose";
+import { CONSTANTS } from "../../constants.js";
 
-// Enum definitions for blood groups, gender, and donation types
-const bloodGroupEnum = ["A+", "A-", "AB+", "AB-", "B+", "B-", "O+", "O-"];
-const genderEnum = ["Male", "Female", "Other"];
-const donationTypeEnum = ["blood", "plasma"];
-
-// Donation schema definition
 const DonationSchema = new mongoose.Schema(
   {
     donorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Donor",
+      ref: CONSTANTS.SCHEMA.DONOR,
       required: true,
     },
     donationType: { type: String, required: true },
-    bloodGroup: { type: String, required: true },
+    bloodGroup: { type: String, required: true, enum: Object.values(CONSTANTS.BLOODGROUP) },
     address: { type: String, required: true },
-    city: { type: String, required: true },
+    city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },
     pincode: { type: String, required: true },
     quantity: { type: Number, required: true },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 15,
+    },
     postedBy: { type: String, required: true },
+    requestedBy : [{ type: mongoose.Schema.Types.ObjectId, ref: "Receiver" }]
   },
   { timestamps: true }
 );
@@ -30,33 +33,20 @@ const RequestSchema = new mongoose.Schema(
   {
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Reciever", // Assuming 'User' is the collection for receivers
+      ref: CONSTANTS.SCHEMA.RECEIVER,
       required: true,
     },
-    receiverName: { type: String, required: true },
-    bloodGroup: { type: String, enum: bloodGroupEnum, required: true },
-    contactInfo: { type: String, required: true },
-    city: { type: String, required: true },
-    requestedAt: { type: Date, default: Date.now },
-    status: {
-      type: String,
-      enum: ["pending", "accepted", "rejected"],
-      default: "pending",
-    }, // Status of the request
-  },
-  { _id: false } // Exclude `_id` for each request subdocument
-);
-// Donor schema definition
-const DonorSchema = new mongoose.Schema(
-  {
-    firstName: {
-      type: String,
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: CONSTANTS.SCHEMA.DONOR,
       required: true,
-      trim: true,
-      minlength: 3,
-      maxlength: 50,
     },
-    lastName: {
+    donationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Donation",
+      required: true,
+    },
+    name: {
       type: String,
       required: true,
       trim: true,
@@ -69,7 +59,7 @@ const DonorSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
-    }, // Unique email
+    },
     phone: {
       type: String,
       required: true,
@@ -77,23 +67,47 @@ const DonorSchema = new mongoose.Schema(
       trim: true,
       minlength: 10,
       maxlength: 15,
-    }, // Unique phone
-    password: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 8,
-      maxlength: 128,
     },
-    bloodGroup: { type: String, required: true, enum: bloodGroupEnum }, // Ensure blood group is valid
-    gender: { type: String, required: true, enum: genderEnum }, // Ensure gender is valid
-    city: {
+    bloodGroup: { type: String, required: true, enum: Object.values(CONSTANTS.BLOODGROUP) },
+    city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },
+    donationType: { type: String, required: true },
+    requestedAt: { type: Date, default: Date.now },
+    status: {
+      type: String,
+      enum: Object.values(CONSTANTS.STATUS),
+      default: CONSTANTS.STATUS.PENDING,
+    },
+  },
+);
+export const Requests = mongoose.model("Requests", RequestSchema);
+
+const DonorSchema = new mongoose.Schema(
+  {
+    name: {
       type: String,
       required: true,
       trim: true,
       minlength: 3,
       maxlength: 50,
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 15,
+    },
+    bloodGroup: { type: String, required: true, enum: Object.values(CONSTANTS.BLOODGROUP) },
+    gender: { type: String, required: true, enum: Object.values(CONSTANTS.GENDER) },
+    city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },
     pincode: {
       type: String,
       required: true,
@@ -101,16 +115,24 @@ const DonorSchema = new mongoose.Schema(
       minlength: 6,
       maxlength: 6,
     },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 8,
+      maxlength: 128,
+    },
     lastLogin: { type: Date, default: Date.now },
     isVerified: { type: Boolean, default: false },
+    isEligible: { type: Boolean, default: false },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
     verificationTokenExpiresAt: Date,
-    donations: [{ type: mongoose.Schema.Types.ObjectId, ref: "Donation" }], // Array of donation references
+    donations: [{ type: mongoose.Schema.Types.ObjectId, ref: CONSTANTS.SCHEMA.DONATION }],
     requestsReceived: [RequestSchema],
   },
   { timestamps: true }
-); // Add timestamps for createdAt and updatedAt
+);
 
 export const Donor = mongoose.model("Donor", DonorSchema);

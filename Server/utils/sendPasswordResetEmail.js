@@ -17,10 +17,10 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
     });
 
     const mailOptions = {
-      from: '"CodeRoom Playground" <coderoom.playground@gmail.com>',
+      from: '"Lifeflow" <shivamlifeflow07@gmail.com>',
       to: email,
-      subject: "Reset your Coderoom password",
-      html: RESET_PASSWORD_TEMPLATE.replace("{firstName}", firstName).replace("{resetURL}",resetURL),
+      subject: "Reset your Lifeflow password",
+      html: RESET_PASSWORD_TEMPLATE.replace("{resetURL}",resetURL),
     };
 
     await transporter.sendMail(mailOptions);

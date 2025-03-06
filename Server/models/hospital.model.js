@@ -1,35 +1,35 @@
 import mongoose from "mongoose";
-const bloodGroupEnum = ["A+", "A-", "AB+", "AB-", "B+", "B-", "O+", "O-"];
-const RequestSchema = new mongoose.Schema(
+import { CONSTANTS } from "../../constants.js";
+
+const HospitalRequestSchema = new mongoose.Schema(
   {
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Reciever", // Assuming 'User' is the collection for receivers
+      ref: CONSTANTS.SCHEMA.RECEIVER, 
       required: true,
     },
     receiverName: { type: String, required: true },
-    bloodGroup: { type: String, enum: bloodGroupEnum, required: true },
+    bloodGroup: { type: String, enum: Object.values(CONSTANTS.BLOODGROUP), required: true },
     contactInfo: { type: String, required: true },
-    city: { type: String, required: true },
     requestedAt: { type: Date, default: Date.now },
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected"],
-      default: "pending",
-    }, // Status of the request
+      enum: Object.values(CONSTANTS.STATUS),
+      default: CONSTANTS.STATUS.PENDING,
+    },
   },
-  { _id: false } // Exclude `_id` for each request subdocument
+  { _id: false }
 );
 
 const BloodBankEntrySchema = new mongoose.Schema({
   bloodType: {
     type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], // Allowed blood types
+    enum: Object.values(CONSTANTS.BLOODGROUP),
     required: true,
   },
   quantityInLiters: {
     type: Number,
-    default: 0, // Default value set to 0
+    default: 0,
     required: true,
     min: 0,
   },
@@ -75,19 +75,13 @@ const HospitalSchema = new mongoose.Schema(
     },
     facilities: {
       type: [String],
-      default: ["Emergency", "ICU", "Radiology", "Pharmacy"],
+      default: ["Blood", "X-Ray", "Thyroid", "Sonography"],
     },
     bloodBank: {
-      type: [BloodBankEntrySchema], // Use the BloodBankEntrySchema as an array
-      default: [], // Default to an empty array
+      type: [BloodBankEntrySchema], 
+      default: [],
     },
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 3,
-      maxlength: 50,
-    },
+    city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },
     pincode: {
       type: String,
       required: true,
@@ -105,7 +99,7 @@ const HospitalSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    requestsReceived: [RequestSchema],
+    requestsReceived: [HospitalRequestSchema],
   },
   { timestamps: true }
 );

@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { VERIFICATION_EMAIL_TEMPLATE } from "../templates/templates.js";
 
-export const sendOTPverificationEmail = async (firstName, email, OTP) => {
+export const sendOTPverificationEmail = async (name, email, OTP) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -15,10 +15,10 @@ export const sendOTPverificationEmail = async (firstName, email, OTP) => {
     });
 
     const mailOptions = {
-      from: '"CodeRoom Playground" <coderoom.playground@gmail.com>',
+      from: '"Lifeflow" <shivamlifeflow07@gmail.com>',
       to: email,
       subject: "OTP Verification Code",
-      html: VERIFICATION_EMAIL_TEMPLATE.replace("{OTP}", OTP).replace("{firstName}", firstName),
+      html: VERIFICATION_EMAIL_TEMPLATE.replace("{OTP}", OTP).replace("{name}", name),
     };
 
     await transporter.sendMail(mailOptions);

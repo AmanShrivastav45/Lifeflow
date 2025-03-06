@@ -1,18 +1,58 @@
 import mongoose from "mongoose";
-const bloodGroupEnum = ["A+", "A-", "AB+", "AB-", "B+", "B-", "O+", "O-"];
-const genderEnum = ["Male", "Female", "Other"];
+import { CONSTANTS } from "../../constants.js";
 
 const RecieverSchema = new mongoose.Schema(
   {
-    firstName: { type: String, required: true, trim: true, minlength: 3, maxlength: 50 },
-    lastName: { type: String, required: true, trim: true, minlength: 3, maxlength: 50 },
-    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-    phone: { type: String, required: true, unique: true, trim: true, minlength: 10, maxlength: 15 },
-    password: { type: String, required: true, trim: true, minlength: 8, maxlength: 128 },
-    bloodGroup: { type: String, required: true, enum: bloodGroupEnum },
-    gender: { type: String, required: true, enum: genderEnum },
-    city: { type: String, required: true, trim: true, minlength: 3, maxlength: 50 },
-    pincode: { type: String, required: true, trim: true, minlength: 6, maxlength: 6 },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 50,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 15,
+    },
+    bloodGroup: {
+      type: String,
+      required: true,
+      enum: Object.values(CONSTANTS.BLOODGROUP),
+    },
+    gender: {
+      type: String,
+      required: true,
+      enum: Object.values(CONSTANTS.GENDER),
+    },
+    city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },
+    requests: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Requests' },
+    ],
+    pincode: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 6,
+      maxlength: 6,
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 8,
+      maxlength: 128,
+    },
     lastLogin: { type: Date, default: Date.now },
     isVerified: { type: Boolean, default: false },
     resetPasswordToken: String,
@@ -22,4 +62,4 @@ const RecieverSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-export const Reciever = mongoose.model("Reciever", RecieverSchema);
+export const Reciever = mongoose.model("Receiver", RecieverSchema);

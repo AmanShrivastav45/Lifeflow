@@ -1,56 +1,88 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const API_URL = "http://localhost:5050/lifeflow/auth";
+const API_URL = "http://localhost:5050/lifeflow/api";
 
 axios.defaults.withCredentials = true;
 
 export const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem("user")) || null, // Load user from localStorage
-  isAuthenticated: localStorage.getItem("isAuthenticated") === "true" || false, // Load auth status
-  role: localStorage.getItem("role") || null, // Load role from localStorage
+  user: JSON.parse(localStorage.getItem("user")) || null, 
+  isAuthenticated: localStorage.getItem("isAuthenticated") === "true" || false,
+  role: localStorage.getItem("role") || null, 
   error: null,
   isLoading: false,
   isCheckingAuth: true,
   message: null,
 
-  signup: async (
-    firstName,
-    lastName,
-    email,
-    phone,
-    password,
-    selectedRole,
-    bloodGroup,
-    gender,
-    city,
-    pincode
-  ) => {
+  signup: async ( role, name , email, phone, bloodGroup, gender, city, pincode, password ) => {
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(`${API_URL}/signup`, {
-        firstName: firstName,
-        lastName: lastName,
+        role: role,
+        name: name,
         email: email,
         phone: phone,
-        password: password,
         bloodGroup: bloodGroup,
-        selectedRole: selectedRole,
         gender: gender,
         city: city,
         pincode: pincode,
+        password: password,
       });
       const userData = response.data.user;
 
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("role", selectedRole); // Persist role
+      localStorage.setItem("role", role);
 
       set({
         user: userData,
         isAuthenticated: true,
         isLoading: false,
-        role: selectedRole,
+        role: role,
+      });
+      
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Error signing up",
+        isLoading: false,
+      });
+      throw error;
+    }
+  },
+
+  healthcareSignup: async (
+    role,
+    name,
+    email,
+    phone,
+    address,
+    city,
+    pincode,
+    password,
+  ) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/healthcare-signup`, {
+        role: role,
+        name: name,
+        email: email,
+        phone: phone,
+        address: address,
+        city: city,
+        pincode: pincode,
+        password: password,
+      });
+      const userData = response.data.user;
+
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("role", role);
+
+      set({
+        user: userData,
+        isAuthenticated: true,
+        isLoading: false,
+        role: role,
       });
     } catch (error) {
       set({
@@ -61,62 +93,19 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-healthcareSignup: async (
-    name,
-    email,
-    phone,
-    password,
-    address,
-    city,
-    pincode,
-    selectedRole
-  ) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await axios.post(`${API_URL}/healthcare-signup`, {
-        name: name,
-        email: email,
-        phone: phone,
-        password: password,
-        address: address,
-        selectedRole: selectedRole,
-        city: city,
-        pincode: pincode,
-      });
-      const userData = response.data.hospital; // Adjusted to match the response structure
-      
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("role", selectedRole); // Persist role
-
-      set({
-        user: userData,
-        isAuthenticated: true,
-        isLoading: false,
-        role: selectedRole,
-      });
-    } catch (error) {
-      set({
-        error: error.response?.data?.message || "Network error occurred. Please try again.",
-        isLoading: false,
-      });
-      throw error; // Optional: If you want to propagate the error further
-    }
-  },
-
-  // Login method
-  login: async (email, password, role) => {
+  login: async (role, email, password) => {
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(`${API_URL}/login`, {
-        email,
-        password,
-        role,
+        role : role,
+        email : email,
+        password: password,
       });
+
       const userData = response.data.user;
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("role", role); // Persist role
+      localStorage.setItem("role", role);
 
       set({
         isAuthenticated: true,
@@ -125,6 +114,7 @@ healthcareSignup: async (
         error: null,
         isLoading: false,
       });
+      
     } catch (error) {
       set({
         error: error.response?.data?.message || "Error logging in",
@@ -134,7 +124,6 @@ healthcareSignup: async (
     }
   },
 
-  // Logout method
   logout: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -156,19 +145,18 @@ healthcareSignup: async (
     }
   },
 
-  // Verify email method
   verifyEmail: async (code, role) => {
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(`${API_URL}/verify-email`, {
         OTP: code,
-        role,
+        role: role,
       });
       const userData = response.data.user;
 
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("role", role); // Persist role
+      localStorage.setItem("role", role); 
 
       set({
         user: userData,
