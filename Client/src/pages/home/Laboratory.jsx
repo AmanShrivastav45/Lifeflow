@@ -8,6 +8,7 @@ import logo from "../../assets/logo.png";
 import { useAuthStore } from "../../store/auth";
 import Email from "../../components/Email";
 import axios from "axios";
+import UploadReport from "../modals/UploadReport";
 
 const Laboratory = () => {
   const { user, logout } = useAuthStore();
@@ -15,6 +16,7 @@ const Laboratory = () => {
   const laboratoryId = useParams().userId;
   const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [updateAppointmentModal, setUpdateAppointmentModal] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -59,7 +61,6 @@ const Laboratory = () => {
     fetchRequestDetails();
   }, [laboratoryId]);
 
-  const facilities = userDetails.facilities;
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
   const [selectedStatus, setSelectedStatus] = useState("All");
 
@@ -68,24 +69,22 @@ const Laboratory = () => {
     for (let i = 4; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      dates.push(date.toISOString().split("T")[0]); // Format: YYYY-MM-DD
+      dates.push(date.toISOString().split("T")[0]);
     }
     return dates;
   };
 
   const last5Days = getLast5Days();
 
-  // Initialize a count object for the last 5 days
   const appointmentsByDate = last5Days.reduce((acc, date) => {
     acc[date] = 0;
     return acc;
   }, {});
 
-  // Count appointments created on those dates
   appointments?.forEach((appointment) => {
     const appointmentDate = new Date(appointment.createdAt)
       .toISOString()
-      .split("T")[0]; // Extract YYYY-MM-DD
+      .split("T")[0];
 
     if (appointmentsByDate.hasOwnProperty(appointmentDate)) {
       appointmentsByDate[appointmentDate]++;
@@ -96,11 +95,11 @@ const Laboratory = () => {
   const toggleCategory = (category) => {
     setSelectedCategories((prev) => {
       if (category === "All") {
-        return ["All"]; // Reset to only "All"
+        return ["All"];
       } else {
         const newCategories = prev.includes(category)
-          ? prev.filter((item) => item !== category) // Remove category
-          : [...prev.filter((item) => item !== "All"), category]; // Add new category and remove "All"
+          ? prev.filter((item) => item !== category)
+          : [...prev.filter((item) => item !== "All"), category];
 
         return newCategories.length > 0 ? newCategories : ["All"];
       }
@@ -127,7 +126,7 @@ const Laboratory = () => {
         height: 350,
       },
       xaxis: {
-        categories: last5Days, // Last 5 days dynamically generated
+        categories: last5Days,
       },
       colors: ["#34D399"],
       title: {
@@ -143,24 +142,16 @@ const Laboratory = () => {
     },
   };
   const appointmentCategories = {};
-  const appointmentStatusCount = { Pending: 0, "In progress": 0, Completed: 0 };
+  const appointmentStatusCount = { pending: 0, "inprogress": 0, completed: 0 };
 
-  // Count categories & statuses dynamically
   userDetails.appointments?.forEach((appointment) => {
-    // Count categories
     appointmentCategories[appointment.category] =
       (appointmentCategories[appointment.category] || 0) + 1;
 
-    // Count statuses
     appointmentStatusCount[appointment.status] =
       (appointmentStatusCount[appointment.status] || 0) + 1;
   });
 
-  // Extracting category data
-  const categoryNames = Object.keys(appointmentCategories);
-  const categoryCounts = Object.values(appointmentCategories);
-
-  // Extracting status data
   const statusNames = Object.keys(appointmentStatusCount);
   const statusCounts = Object.values(appointmentStatusCount);
 
@@ -195,8 +186,15 @@ const Laboratory = () => {
   };
 
   const capitalizeName = (name) => {
-    if (!name) return ""; // Handle empty or undefined values
+    if (!name) return "";
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  };
+
+  const [selectedAppointmentIndex, setSelectedAppointmentIndex] = useState(null);
+
+  const handleUpdateClick = (index) => {
+    setSelectedAppointmentIndex(index);
+    setUpdateAppointmentModal(true);
   };
 
   return (
@@ -217,9 +215,9 @@ const Laboratory = () => {
                 <div className="h-7 w-7 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"></div>
               </button>
               {isProfileButtonOpen && user ? (
-                <div 
-                className="absolute right-0 top-full mt-1 w-auto  min-w-48 bg-white shadow-xl border border-gray-300 rounded-[5px]"
-                style={{ right: "10px", top: "25px" }}
+                <div
+                  className="absolute right-0 top-full mt-1 w-auto  min-w-48 bg-white shadow-xl border border-gray-300 rounded-[5px]"
+                  style={{ right: "10px", top: "25px" }}
                 >
                   <div
                     className="text-gray-600"
@@ -303,11 +301,10 @@ const Laboratory = () => {
                 <div className="flex items-center mb-4 text-xs space-x-2 text-gray-600">
                   <button
                     onClick={() => toggleCategory("All")}
-                    className={`py-0.5 px-2 rounded-[6px] border ${
-                      selectedCategories.includes("All")
-                        ? "bg-blue-600 text-white"
-                        : "bg-blue-100 text-blue-600 border-blue-600"
-                    }`}
+                    className={`py-0.5 px-2 rounded-[6px] border ${selectedCategories.includes("All")
+                      ? "bg-blue-600 text-white"
+                      : "bg-blue-100 text-blue-600 border-blue-600"
+                      }`}
                   >
                     All
                   </button>
@@ -316,41 +313,46 @@ const Laboratory = () => {
                     <button
                       key={facility}
                       onClick={() => toggleCategory(facility)}
-                      className={`py-0.5 px-2 rounded-[6px] border ${
-                        selectedCategories.includes(facility)
-                          ? "bg-blue-600 text-white"
-                          : "bg-blue-100 text-blue-600 border-blue-600"
-                      }`}
+                      className={`py-0.5 px-2 rounded-[6px] border ${selectedCategories.includes(facility)
+                        ? "bg-blue-600 text-white"
+                        : "bg-blue-100 text-blue-600 border-blue-600"
+                        }`}
                     >
                       {facility}
                     </button>
                   ))}
                 </div>
               </div>
-              {filteredAppointments.length == 0 ? (
+              {filteredAppointments.length === 0 ? (
                 <p className="mt-48 flex justify-center">
                   No reports available.
                 </p>
               ) : (
-                filteredAppointments.map((appointment) => (
-                  <div className="flex flex-col items-center justify-between my-2 bg-gray-50 p-2 rounded-[5px] border border-gray-300 pl-3">
+                filteredAppointments.map((appointment, index) => (
+                  <div key={appointment._id} className="flex flex-col items-center justify-between my-2 bg-gray-50 p-2 rounded-[5px] border border-gray-300 pl-3">
                     {/* Name and Status */}
                     <div className="flex justify-between w-full mb-2">
                       <div className="flex space-x-2 items-center w-full justify-between">
-                        <h3 className="font-medium">
+                        <h3 className="font-medium flex items-center">
                           {capitalizeName(appointment.name)}
-                        </h3>
-                        <h3
-                          className={`text-[11px] py-1 px-2 rounded-[5px] border ${
-                            appointment.status === "pending"
-                              ? "bg-[#FF4560] border-[#FF4560] text-white"
+                          <h3
+                            className={`text-[10px] ml-2 py-[1px] px-1 rounded-[5px] font-semibold border ${appointment.status === "pending"
+                              ? "text-[#FF4560] border-[#FF4560] bg-red-100"
                               : appointment.status === "inprogress"
-                              ? "bg-[#008FFB] border-[#008FFB] text-white"
-                              : "bg-[#00E396] border-[#00E396] text-white"
-                          }`}
-                        >
-                          {capitalizeName(appointment.status)}
+                                ? "text-[#008FFB] border-[#008FFB] bg-blue-100"
+                                : "text-[#12c24a] border-[#12c24a] bg-green-100"
+                              }`}
+                          >
+                            {capitalizeName(appointment.status)}
+                          </h3>
                         </h3>
+                        <button
+                          disabled={appointment.status === "completed"}
+                          onClick={() => handleUpdateClick(index)} // Pass the index here
+                          className={`text-[12px] mt-0.5 py-0.5 px-2 rounded-[4px] border  border-[#008FFB] ${appointment.status === "completed" ? 'cursor-not-allowed bg-[#0b75c5] text-gray-300' : 'cursor-pointer bg-[#008FFB] text-white'}`}
+                        >
+                          Update
+                        </button>
                       </div>
                     </div>
                     <h3 className="text-xs text-start flex w-full">
@@ -359,7 +361,6 @@ const Laboratory = () => {
                       ,&nbsp;between&nbsp;{appointment.timeslot}.
                     </h3>
 
-                    {/* Category, Email, Phone */}
                     <div className="flex w-full text-xs space-x-2 my-2">
                       <div className="p-0.5 bg-blue-100 px-2 rounded-[5px] border border-gray-300">
                         {appointment.category}
@@ -371,6 +372,16 @@ const Laboratory = () => {
                         +91 {appointment.phone}
                       </div>
                     </div>
+
+                    {/* Only render the modal for the selected index */}
+                    {updateAppointmentModal && selectedAppointmentIndex === index && (
+                      <UploadReport
+                        laboratoryId={laboratoryId}
+                        status={appointment.status}
+                        index={index}
+                        onCancel={() => setUpdateAppointmentModal(false)} // Close the modal when canceled
+                      />
+                    )}
                   </div>
                 ))
               )}

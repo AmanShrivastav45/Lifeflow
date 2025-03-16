@@ -1,5 +1,8 @@
 import bcryptjs from "bcryptjs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { Donor, Donation, Requests } from "../models/donor.model.js";
+import File from "../models/file.model.js";
 import { Reciever } from "../models/reciever.model.js";
 import { Hospital } from "../models/hospital.model.js";
 import { Laboratory } from "../models/lab.model.js";
@@ -7,20 +10,100 @@ import { generateOTP } from "../utils/generateOTP.js";
 import { sendWelcomeEmail } from "../utils/sendWelcomeEmail.js";
 import { sendOTPverificationEmail } from "../utils/sendOTPverificationEmail.js";
 import { generateJWTandSetCookie } from "../utils/generateJWTandSetCookie.js";
-import multer from "multer";
 import mongoose from "mongoose";
-import { ROLES } from "../../Client/src/pages/constants/roles.js";
 import { CONSTANTS } from "../../constants.js";
+import axios from 'axios';
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const appointmentFeedback = async (extractedText) => {
+  try {
+    const API_URL = process.env.OPEN_AI_KEY || "";
+    const response = await axios.post(API_URL, {
+      contents: [
+        {
+          parts: [
+            {
+              text: `Give a 1 line feedback in 15 words for the text: ${extractedText}`
+            }
+          ]
+        }
+      ]
+    });
+    return response.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  } catch (error) {
+    console.error("Error getting feedback from OpenAI:", error);
+    throw new Error("Error getting feedback from OpenAI");
+  }
+};
+
+export const uploadFile = async (req, res) => {
+  try {
+    let { index, status, laboratoryId, text } = req.body;
+    if (!req.file && !status) {
+      return res.status(400).json({ message: "Either a file or status must be provided" });
+    }
+    if (!status) status = CONSTANTS.APPOINTMENT_STATUS.COMPLETED;
+    let newFile;
+    let feedback = null;
+    if (req.file) {
+      newFile = new File({ filename: req.file.filename });
+      await newFile.save();
+    }
+    if (text) {
+      console.log("Text:", text)
+      const feedbackResponse = await appointmentFeedback(text);
+      feedback = feedbackResponse ? feedbackResponse : "";
+    }
+    const laboratory = await Laboratory.findById(laboratoryId);
+    if (!laboratory) {
+      return res.status(404).json({ message: "Laboratory not found" });
+    }
+    const appointment = laboratory.appointments[index];
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+    appointment.status = status;
+    if (newFile) {
+      appointment.report = newFile._id;
+    }
+    if (feedback) {
+      appointment.feedback = feedback;
+    }
+    await laboratory.save();
+    const response = {
+      message: "File uploaded successfully",
+      filename: req.file ? req.file.filename : null,
+      status,
+      feedback: feedback || null,
+    };
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "File upload failed" });
+  }
+};
+
+export const getFiles = async (req, res) => {
+  try {
+    const files = await File.find();
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching files" });
+  }
+};
+
+export const viewFile = async (req, res) => {
+  try {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, "../uploads", filename);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving file" });
+  }
+};
 
 export const signup = async (request, response) => {
   const {
@@ -76,29 +159,29 @@ export const signup = async (request, response) => {
     const newUser =
       role === CONSTANTS.ROLES.DONOR
         ? new Donor({
-            name,
-            email,
-            phone,
-            bloodGroup,
-            gender,
-            city,
-            pincode,
-            password: hashedPassword,
-            verificationToken: OTP,
-            verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
-          })
+          name,
+          email,
+          phone,
+          bloodGroup,
+          gender,
+          city,
+          pincode,
+          password: hashedPassword,
+          verificationToken: OTP,
+          verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
+        })
         : new Reciever({
-            name,
-            email,
-            phone,
-            bloodGroup,
-            gender,
-            city,
-            pincode,
-            password: hashedPassword,
-            verificationToken: OTP,
-            verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
-          });
+          name,
+          email,
+          phone,
+          bloodGroup,
+          gender,
+          city,
+          pincode,
+          password: hashedPassword,
+          verificationToken: OTP,
+          verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
+        });
 
     try {
       await newUser.save();
@@ -159,27 +242,27 @@ export const healthCareSignup = async (request, response) => {
     const newUser =
       role === CONSTANTS.ROLES.HOSPITAL
         ? new Hospital({
-            name,
-            email,
-            phone,
-            address,
-            city,
-            pincode,
-            password: hashedPassword,
-            verificationToken: OTP,
-            verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
-          })
+          name,
+          email,
+          phone,
+          address,
+          city,
+          pincode,
+          password: hashedPassword,
+          verificationToken: OTP,
+          verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
+        })
         : new Laboratory({
-            name,
-            email,
-            phone,
-            address,
-            city,
-            pincode,
-            password: hashedPassword,
-            verificationToken: OTP,
-            verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
-          });
+          name,
+          email,
+          phone,
+          address,
+          city,
+          pincode,
+          password: hashedPassword,
+          verificationToken: OTP,
+          verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000,
+        });
 
     try {
       await newUser.save();
@@ -317,7 +400,7 @@ export const forgotPassword = async (request, response) => {
         .json({ success: false, message: "User not found" });
 
     const resetToken = generateOTP();
-    const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+    const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
 
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpiresAt = resetTokenExpiresAt;
@@ -375,7 +458,7 @@ export const checkAuth = async (request, response, role) => {
         .json({ success: false, message: "User not found" });
     response.status(200).json({ success: true, user });
   } catch (error) {
-    // console.log("Error in checkAuth ", error);
+
     response.status(400).json({ success: false, message: error.message });
   }
 };
@@ -420,7 +503,7 @@ export const addDonation = async (req, res) => {
 
     res.status(201).json({ message: "Donation added successfully", donation });
   } catch (error) {
-    console.error("Error adding donation:", error); // Detailed error logging
+    console.error("Error adding donation:", error);
     res
       .status(500)
       .json({ message: "Error adding donation", error: error.message });
@@ -473,8 +556,8 @@ export const updateUser = async (req, res) => {
 
 export const getAllDonations = async (req, res) => {
   try {
-    const donations = await Donation.find({}).lean(); // Fetch all donations
-    res.status(200).json(donations); // Return all donations
+    const donations = await Donation.find({}).lean();
+    res.status(200).json(donations);
   } catch (error) {
     res.status(500).json({ message: "Error fetching donations", error });
   }
@@ -490,7 +573,7 @@ export const getAllHospitals = async (req, res) => {
 
     res.status(200).json(hospitals);
   } catch (error) {
-    console.error("Error fetching hospitals:", error); // Log the error for debugging
+    console.error("Error fetching hospitals:", error);
     res
       .status(404)
       .json({ message: "Error fetching hospitals", error: error.message });
@@ -517,8 +600,6 @@ export const getAllLabs = async (req, res) => {
 export const getAllLabRequests = async (req, res) => {
   try {
     const { laboratoryId } = req.params;
-    console.log("Received laboratoryId:", laboratoryId);
-
     if (!mongoose.Types.ObjectId.isValid(laboratoryId)) {
       return res.status(400).json({ message: "Invalid Laboratory ID format." });
     }
@@ -557,7 +638,7 @@ export const getDonationsByDonor = async (req, res) => {
   }
 };
 
-// Get donations by blood group
+
 export const getDonationsByBloodGroup = async (req, res) => {
   const { bloodGroup } = req.params;
 
@@ -587,23 +668,23 @@ export const addBloodBankDetails = async (req, res) => {
       return res.status(404).json({ message: "Hospital not found" });
     }
 
-    // Find the index of the blood group in the bloodBank array
+
     const existingBloodGroupIndex = hospital.bloodBank.findIndex(
       (entry) => entry.bloodType === bloodType
     );
 
     if (existingBloodGroupIndex !== -1) {
       if (quantityInLiters <= 0) {
-        // Remove the blood group entry if quantity is zero
+
         hospital.bloodBank.splice(existingBloodGroupIndex, 1);
       } else {
-        // Update the quantity if it's greater than zero
+
         hospital.bloodBank[existingBloodGroupIndex].quantityInLiters =
           quantityInLiters;
         hospital.bloodBank[existingBloodGroupIndex].lastUpdated = Date.now();
       }
     } else if (quantityInLiters > 0) {
-      // Add a new entry if quantity is greater than zero
+
       hospital.bloodBank.push({
         bloodType,
         quantityInLiters,
@@ -631,7 +712,6 @@ export const getBloodBankDetails = async (req, res) => {
       return res.status(404).json({ message: "Hospital not found" });
     }
 
-    // Send the blood bank details in the response
     console.log(hospital.bloodBank);
     res.status(200).json({
       bloodBank: hospital.bloodBank,
@@ -832,7 +912,7 @@ export const getDonorRequests = async (req, res) => {
 
 export const makeDonationRequesttoHospital = async (req, res) => {
   try {
-    const { hospitalId } = req.params; // ID of the donor to whom the request is sent
+    const { hospitalId } = req.params;
     const { receiverId, receiverName, bloodGroup, contactInfo, city } =
       req.body;
 
@@ -855,14 +935,40 @@ export const makeDonationRequesttoHospital = async (req, res) => {
       status: "pending",
     };
 
-    // Push the request into the donor's requestsReceived array
+
     hospital.requestsReceived.push(newRequest);
-    // Save the updated donor document
+
     await hospital.save();
-    // Respond with a success message
+
     res.status(201).json({ message: "Donation request sent successfully." });
   } catch (error) {
     console.error("Error sending donation request:", error);
     res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const filterDonation = async (req, res) => {
+
+  const { bloodGroup, city, donationType } = req.query;
+  let filter = {};
+
+  if (bloodGroup) {
+    filter.bloodGroup = bloodGroup;
+  }
+
+  if (city) {
+    filter.city = { $regex: city, $options: "i" };
+  }
+
+  if (donationType) {
+    filter.donationType = donationType;
+  }
+
+  try {
+    const filteredDonations = await Donation.find(filter).exec();
+    res.json(filteredDonations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error filtering donations" });
   }
 };

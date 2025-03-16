@@ -8,6 +8,15 @@ const AppointmentSchema = new mongoose.Schema(
       ref: "Donor",
       required: true,
     },
+    report: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "File",
+    },
+    feedback: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
     name: {
       type: String,
       required: true,

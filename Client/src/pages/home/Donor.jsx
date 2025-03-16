@@ -9,7 +9,7 @@ import Email from "../../components/Email";
 import { IoClose } from "react-icons/io5";
 import VerifyDonor from "../modals/VerifyDonor";
 import Tesseract from "tesseract.js";
-import * as pdfjsLib from "pdfjs-dist"; // Import the worker script
+import * as pdfjsLib from "pdfjs-dist";
 import axios from "axios";
 import AddDonation from "../modals/AddDonation";
 import Hospital from "../components/Hospital";
@@ -153,7 +153,6 @@ const Donor = () => {
       let extractedText = "";
 
       if (file.type === "application/pdf") {
-        // For PDF files
         const pdfData = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
         const numPages = pdf.numPages;
