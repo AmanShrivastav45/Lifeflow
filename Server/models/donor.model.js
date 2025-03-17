@@ -22,7 +22,7 @@ const DonationSchema = new mongoose.Schema(
       maxlength: 15,
     },
     postedBy: { type: String, required: true },
-    requestedBy : [{ type: mongoose.Schema.Types.ObjectId, ref: "Receiver" }]
+    requestedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "Receiver" }]
   },
   { timestamps: true }
 );
@@ -34,35 +34,35 @@ const RequestSchema = new mongoose.Schema(
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: CONSTANTS.SCHEMA.RECEIVER,
-      required: true,
+      required: false,
     },
     donorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: CONSTANTS.SCHEMA.DONOR,
-      required: true,
+      required: false,
     },
     donationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Donation",
-      required: true,
+      required: false,
     },
     name: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       minlength: 3,
       maxlength: 50,
     },
     email: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
       trim: true,
       lowercase: true,
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
       trim: true,
       minlength: 10,
@@ -132,7 +132,8 @@ const DonorSchema = new mongoose.Schema(
     donations: [{ type: mongoose.Schema.Types.ObjectId, ref: CONSTANTS.SCHEMA.DONATION }],
     requestsReceived: [RequestSchema],
   },
-  { timestamps: true }
+  { timestamps: true },
+  { autoIndex: false }
 );
 
 export const Donor = mongoose.model("Donor", DonorSchema);

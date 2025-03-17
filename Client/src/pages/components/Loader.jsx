@@ -4,7 +4,7 @@ const Loader = () => {
   return (
     <div
       style={{ zIndex: 10000 }}
-      className="fixed bg-black inset-0 top-0 left-0 w-full h-screen flex items-center justify-center"
+      className="fixed bg-black bg-opacity-25 inset-0 top-0 left-0 w-full h-screen flex items-center justify-center"
     >
       <svg
         width="300px"
