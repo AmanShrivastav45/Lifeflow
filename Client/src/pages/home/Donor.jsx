@@ -43,6 +43,27 @@ const Donor = () => {
   const [requests, setRequests] = useState([]);
   const [response, setResponse] = useState("");
   const [filteredLaboratories, setfilteredLaboratories] = useState([]);
+  const [donorAppointments, setDonorAppointments] = useState({});
+  const [selectedReport, setSelectedReport] = useState("");
+
+  const fetchDonorAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/lifeflow/api/donors/${userDetails._id}/appointments`
+      );
+      const app = response.data;
+      console.log(app)
+      setDonorAppointments(app);
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser) {
+        const updatedUser = { ...storedUser, appointments: app };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error("Error fetching blood bank details:", error);
+    }
+  }
 
   const fetchRequestDetails = async () => {
     setLoading(true);
@@ -64,6 +85,9 @@ const Donor = () => {
       setLoading(false);
     }
   };
+
+  const appointmentDetails = userDetails.appointments;
+
 
   const fetchHospitals = async () => {
     try {
@@ -88,6 +112,7 @@ const Donor = () => {
   useEffect(() => {
     fetchRequestDetails();
     fetchHospitals();
+    fetchDonorAppointments();
   }, [donorId]);
 
   useEffect(() => {
@@ -113,6 +138,7 @@ const Donor = () => {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedApCategory, setSelectedApCategory] = useState("All");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -243,13 +269,13 @@ const Donor = () => {
 
   const filteredRequests = Array.isArray(requests?.data)
     ? requests.data.filter((lab) => {
-        const categoryMatch =
-          selectedCategory === "All" || lab.status === selectedCategory;
+      const categoryMatch =
+        selectedCategory === "All" || lab.status === selectedCategory;
 
-        const bloodGroupMatch =
-          bloodGroup.length === 0 || bloodGroup.includes(lab.bloodGroup);
-        return categoryMatch && bloodGroupMatch;
-      })
+      const bloodGroupMatch =
+        bloodGroup.length === 0 || bloodGroup.includes(lab.bloodGroup);
+      return categoryMatch && bloodGroupMatch;
+    })
     : [];
 
   return (
@@ -265,19 +291,24 @@ const Donor = () => {
                 </button>
                 <button
                   onClick={() => setTab("requests")}
-                  className={`flex items-center justify-center mx-4 ${
-                    tab === "requests" ? "text-gray-700" : "text-gray-400"
-                  }`}
+                  className={`flex items-center justify-center mx-4 ${tab === "requests" ? "text-gray-700" : "text-gray-400"
+                    }`}
                 >
                   Requests
                 </button>
                 <button
                   onClick={() => setTab("laboratories")}
-                  className={`flex items-center justify-center mx-4 ${
-                    tab === "laboratories" ? "text-gray-700" : "text-gray-400"
-                  }`}
+                  className={`flex items-center justify-center mx-4 ${tab === "laboratories" ? "text-gray-700" : "text-gray-400"
+                    }`}
                 >
                   Laboratories
+                </button>
+                <button
+                  onClick={() => setTab("appointments")}
+                  className={`flex items-center justify-center mx-4 ${tab === "appointments" ? "text-gray-700" : "text-gray-400"
+                    }`}
+                >
+                  Appointments
                 </button>
               </div>
             </div>
@@ -435,13 +466,12 @@ const Donor = () => {
                             </p>
                           </h1>
                           <span
-                            className={`text-[10px] ml-3 font-medium ${
-                              request.status === "pending"
-                                ? "text-yellow-500 bg-yellow-100 border border-yellow-500 px-2 py-0.5 rounded-[5px]"
-                                : request.status === "approved"
+                            className={`text-[10px] ml-3 font-medium ${request.status === "pending"
+                              ? "text-yellow-500 bg-yellow-100 border border-yellow-500 px-2 py-0.5 rounded-[5px]"
+                              : request.status === "approved"
                                 ? "text-green-500 bg-green-100 border border-green-500 px-2 py-0.5 rounded-[5px]"
                                 : "text-red-500 bg-red-100 border border-red-500 px-2 py-0.5 rounded-[5px]"
-                            }`}
+                              }`}
                           >
                             {request.status.charAt(0).toUpperCase() +
                               request.status.slice(1).toLowerCase()}
@@ -522,7 +552,7 @@ const Donor = () => {
             </div>
           </div>
         </div>
-      ) : (
+      ) : tab === "laboratories" ? (
         <div className="h-full w-full mt-16 flex items-center justify-center text-white overflow-y-auto hide-scrollbar">
           <div className="w-full xl:w-[1280px] flex text-gray-500 sm:p-3 h-full hide-scrollbar">
             <div className="h-full w-full px-2 flex flex-col">
@@ -585,8 +615,91 @@ const Donor = () => {
             </div>
           </div>
         </div>
-      )}
+      ) : (
+        <div className="h-full flex justify-center w-full mt-14">
+          <div className="w-full xl:w-[1280px] flex px-4">
+            <div className="h-full w-[55%] flex flex-col mt-4">
+              <div className="w-full h-[640px] bg-gradient-to-l from-[#fff7e4] to-white shadow-base border border-gray-300 p-4 py-3 rounded-[5px] overflow-y-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-gray-700 text-sm">Appointments</h2>
+                  <select
+                    value={selectedApCategory}
+                    onChange={(e) => setSelectedApCategory(e.target.value)}
+                    className="bg-white text-gray-600 border border-gray-300 outline-none text-sm rounded-[7px] h-8 px-2 shadow-sm"
+                  >
+                    <option value="All">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+                <div className="space-y-4">
+                  {appointmentDetails?.length > 0 ? (
+                    appointmentDetails.map((appointment, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 border border-gray-300 rounded-[5px] p-4 shadow-sm"
+                      >
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                          <h1 className="flex items-center">
+                            {appointment.category.charAt(0).toUpperCase() +
+                              appointment.category.slice(1).toLowerCase()}{" "}Test,&nbsp;
+                            {appointment.labname}
+                          </h1>
+                          <span
+                            className={`text-[10px] ml-3 font-medium ${appointment.status === "pending"
+                              ? "text-red-500 bg-red-100 border border-red-500 px-2 py-0.5 rounded-[5px]"
+                              : appointment.status === "completed"
+                                ? "text-green-500 bg-green-100 border border-green-500 px-2 py-0.5 rounded-[5px]"
+                                : "text-blue-500 bg-blue-100 border border-blue-500 px-2 py-0.5 rounded-[5px]"
+                              }`}
+                          >
+                            {appointment.status.charAt(0).toUpperCase() +
+                              appointment.status.slice(1).toLowerCase()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Requested On: &nbsp;
+                          {new Date(appointment.date).toLocaleString()}
+                        </p>
+                        {appointment.report ? (
+                          <div>
+                            <p className="text-xs text-gray-400 my-2">
+                              Feedback: &nbsp;
+                              {appointment.feedback}
+                            </p>
+                            <button
+                              onClick={() => setSelectedReport(appointment.filename)}
+                              className="h-7 mt-2 text-xs px-3 font-medium bg-green-600 text-white rounded-[5px] flex items-center justify-center"
+                            >
+                              View Report
+                            </button>
 
+                          </div>
+                        ) : null}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-600 mt-48">
+                      No Appointments.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="h-full w-[55%] flex flex-col mt-4 ml-4">
+              <div className="w-full h-[640px] bg-gradient-to-l from-[#fff7e4] to-white shadow-base border border-gray-300 p-4 py-3 rounded-[5px] overflow-y-auto">
+                {selectedReport !== "" ? (
+                  <iframe className="h-full w-full" src={`http://localhost:5050/lifeflow/api/view/${selectedReport}`}
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">No report to show</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {!isVerified && verificationModel ? (
         <div className="absolute top-0 left-0 w-full h-screen bg-black bg-opacity-65 flex items-center justify-center z-50">
           <div className="bg-gradient-to-l from-[#ffefc9] to-white relative p-5 rounded-[5px] border border-gray-300 shadow-lg w-[95%] md:w-[320px]">

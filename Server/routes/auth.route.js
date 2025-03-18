@@ -4,7 +4,9 @@ import {
   addDonation, getAllDonations, getDonationsByDonor, healthCareSignup,
   addBloodBankDetails, getBloodBankDetails, getAllHospitals, makeDonationRequest,
   getDonorRequests, updateUser, makeDonationRequestfromHospital,
-  getHospitalRequests, getAllLabs, createAppointment, getAllLabRequests, filterDonation, uploadFile, getFiles, viewFile
+  getHospitalRequests, getAllLabs, createAppointment, getAllLabRequests, filterDonation, uploadFile, getFiles, viewFile,
+  getFile,
+  getDonorAppointments
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/auth.token.js";
 import multer from "multer";
@@ -57,9 +59,11 @@ router.get('/:hospitalId/requests', getHospitalRequests)
 router.post("/donor/:donorId/request", makeDonationRequest); // 
 router.post("/hospital/:hospitalId/request", makeDonationRequestfromHospital);
 router.get('/donors/:donorId/requests', getDonorRequests);
+router.get('/donors/:donorId/appointments', getDonorAppointments);
 router.get("/donors/donations/filter", filterDonation)
 router.post("/upload", upload.single("file"), uploadFile);
 router.get("/files", getFiles);
+router.get("/getfile", getFile);
 router.get("/view/:filename", viewFile);
 
 export default router;

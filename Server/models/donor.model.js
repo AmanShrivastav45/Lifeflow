@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { CONSTANTS } from "../../constants.js";
+import { Appointments } from "./lab.model.js";
 
 const DonationSchema = new mongoose.Schema(
   {
@@ -28,6 +29,88 @@ const DonationSchema = new mongoose.Schema(
 );
 
 export const Donation = mongoose.model("Donation", DonationSchema);
+
+const AppointmentSchema = new mongoose.Schema(
+  {
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Donor",
+      required: true,
+    },
+    report: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "File",
+    },
+    feedback: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 15,
+    },
+    labname: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+
+    labemail: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    labphone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 15,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    timeslot: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(CONSTANTS.APPOINTMENT_STATUS),
+      default: CONSTANTS.APPOINTMENT_STATUS.PENDING,
+    },
+    appointmentId: {
+      type: String,
+    },
+    filename: {
+      type: String,
+    }
+  },
+  { timestamps: true }
+);
 
 const RequestSchema = new mongoose.Schema(
   {
@@ -131,6 +214,7 @@ const DonorSchema = new mongoose.Schema(
     verificationTokenExpiresAt: Date,
     donations: [{ type: mongoose.Schema.Types.ObjectId, ref: CONSTANTS.SCHEMA.DONATION }],
     requestsReceived: [RequestSchema],
+    appointments: [AppointmentSchema],
   },
   { timestamps: true },
   { autoIndex: false }

@@ -23,6 +23,7 @@ const AppointmentSchema = new mongoose.Schema(
       trim: true,
       maxlength: 100,
     },
+
     email: {
       type: String,
       required: true,
@@ -36,6 +37,27 @@ const AppointmentSchema = new mongoose.Schema(
       trim: true,
       maxlength: 15,
     },
+    labname: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+
+    labemail: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    labphone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 15,
+    },
+    
     category: {
       type: String,
       required: true,
@@ -50,11 +72,17 @@ const AppointmentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: Object.values(CONSTANTS.APPOINTMENT_STATUS), 
+      enum: Object.values(CONSTANTS.APPOINTMENT_STATUS),
       default: CONSTANTS.APPOINTMENT_STATUS.PENDING,
     },
+    appointmentId: {
+      type: String,
+    },
+    filename: {
+      type: String,
+    }
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
 export const Appointments = mongoose.model("Appointment", AppointmentSchema);

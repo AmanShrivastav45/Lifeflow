@@ -13,6 +13,7 @@ import { generateJWTandSetCookie } from "../utils/generateJWTandSetCookie.js";
 import mongoose from "mongoose";
 import { CONSTANTS } from "../../constants.js";
 import axios from 'axios';
+import { randomUUID } from "crypto";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +53,6 @@ export const uploadFile = async (req, res) => {
       await newFile.save();
     }
     if (text) {
-      console.log("Text:", text)
       const feedbackResponse = await appointmentFeedback(text);
       feedback = feedbackResponse ? feedbackResponse : "";
     }
@@ -64,13 +64,29 @@ export const uploadFile = async (req, res) => {
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
+    const donor = await Donor.findById(appointment.donorId);
+    const donorAp = donor.appointments.find(app => app.appointmentId === appointment.appointmentId);
+
     appointment.status = status;
     if (newFile) {
       appointment.report = newFile._id;
+      appointment.filename = newFile.filename
     }
     if (feedback) {
       appointment.feedback = feedback;
     }
+    if (donorAp) {
+      donorAp.status = status;
+      if (newFile) {
+        donorAp.report = newFile._id;
+        donorAp.filename = newFile.filename
+      }
+      if (feedback) {
+        donorAp.feedback = feedback;
+      }
+    }
+
+    await donor.save();
     await laboratory.save();
     const response = {
       message: "File uploaded successfully",
@@ -89,6 +105,16 @@ export const getFiles = async (req, res) => {
   try {
     const files = await File.find();
     res.json(files);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching files" });
+  }
+};
+
+export const getFile = async (req, res) => {
+  try {
+    const { reportId } = req.body;
+    const file = await File.findById(reportId);
+    res.json(file);
   } catch (error) {
     res.status(500).json({ message: "Error fetching files" });
   }
@@ -638,6 +664,24 @@ export const getDonationsByDonor = async (req, res) => {
   }
 };
 
+export const getDonorAppointments = async (req, res) => {
+  const { donorId } = req.params;
+
+  try {
+    const donor = await Donor.findById(donorId);
+    const DonorAppointments = donor.appointments;
+
+    if (DonorAppointments.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No Appointments found" });
+    }
+
+    res.status(200).json(DonorAppointments);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching donations", error });
+  }
+};
 
 export const getDonationsByBloodGroup = async (req, res) => {
   const { bloodGroup } = req.params;
@@ -861,6 +905,7 @@ export const createAppointment = async (req, res) => {
       return res.status(404).json({ message: "Laboratory not found." });
     }
 
+    const appointmentNumber = randomUUID();
     const newAppointment = {
       donorId,
       category,
@@ -869,11 +914,17 @@ export const createAppointment = async (req, res) => {
       name: donor.name,
       email: donor.email,
       phone,
+      appointmentId: appointmentNumber,
+      labname: laboratory.name,
+      labemail: laboratory.email,
+      labphone : laboratory.phone,
     };
 
     try {
       laboratory.appointments.push(newAppointment);
       await laboratory.save();
+      donor.appointments.push(newAppointment);
+      await donor.save();
     } catch (error) {
       console.error("Error", error);
       return res
