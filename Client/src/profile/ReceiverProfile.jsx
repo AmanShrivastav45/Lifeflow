@@ -174,17 +174,9 @@ const ReceiverProfile = () => {
                           <h1 className="text-xs mb-1 ml-0.5 mr-1">Email</h1>
                         </div>
                         <input
-                          disabled={!isEditModeOn}
-                          maxLength={30}
+                          disabled={true}
                           type="text"
-                          placeholder="Enter your email address"
-                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                            !isEditModeOn
-                              ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                              : ""
-                          }`}
-                          onChange={(e) => setEmail(e.target.value)}
-                          value={email}
+                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 focus:outline-blue-400 px-2 h-9 text-xs rounded-[5px] flex items-center justify-center cursor-not-allowed text-gray-400 bg-white`}
                         />
                       </div>
                       <div className="w-[33%] flex flex-col ml-1">

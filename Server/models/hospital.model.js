@@ -5,18 +5,15 @@ const HospitalRequestSchema = new mongoose.Schema(
   {
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: CONSTANTS.SCHEMA.RECEIVER, 
+      ref: CONSTANTS.SCHEMA.RECEIVER,
       required: true,
     },
     receiverName: { type: String, required: true },
     bloodGroup: { type: String, enum: Object.values(CONSTANTS.BLOODGROUP), required: true },
     contactInfo: { type: String, required: true },
+    quantityInLiters: { type: Number, default: 0, min: 0},
     requestedAt: { type: Date, default: Date.now },
-    status: {
-      type: String,
-      enum: Object.values(CONSTANTS.STATUS),
-      default: CONSTANTS.STATUS.PENDING,
-    },
+    status: { type: String, enum: Object.values(CONSTANTS.STATUS), default: CONSTANTS.STATUS.PENDING},
   },
   { _id: false }
 );
@@ -78,7 +75,7 @@ const HospitalSchema = new mongoose.Schema(
       default: ["Blood", "X-Ray", "Thyroid", "Sonography"],
     },
     bloodBank: {
-      type: [BloodBankEntrySchema], 
+      type: [BloodBankEntrySchema],
       default: [],
     },
     city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },

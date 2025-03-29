@@ -24,6 +24,7 @@ const Hospital = ({
   const recieverId = useParams().userId || null;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedBloodGroup, setSelectedBloodGroup] = useState("");
+  const [selectedQuantities, setSelectedQuantities] = useState({});
 
   const handleViewClick = () => {
     setModalOpen(true);
@@ -33,33 +34,41 @@ const Hospital = ({
     setModalOpen(false);
   };
 
-  const bloodGroupDisplay = {
-    "A+": "A+",
-    "A-": "A-",
-    "B+": "B+",
-    "B-": "B-",
-    "O+": "O+",
-    "O-": "O-",
-    "AB+": "AB+",
-    "AB-": "AB-",
+  const handleQuantityChange = (value, bloodGroup) => {
+    setSelectedQuantities((prev) => ({
+      ...prev,
+      [value]: bloodBank,
+    }));
   };
 
-  const bloodGroupDisplay2 = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
+  const handleClick = (availableQuantity, bloodGroup) => {
+    console.log(availableQuantity, bloodGroup)
+    console.log("Ans", selectedQuantities[bloodGroup]);
+    const quantity = parseFloat(selectedQuantities[bloodGroup]);
+    console.log("Qty", quantity);
+    if (!quantity || quantity <= 0) {
+      toast.error("Please enter a valid quantity greater than 0.");
+      return;
+    }
 
-  const handleClick = (bloodGroup) => {
-    setSelectedBloodGroup(bloodGroupDisplay2[bloodGroup]);
-    handleRequest(bloodGroupDisplay2[bloodGroup]);
+    if (quantity > availableQuantity) {
+      toast.error(`Only ${availableQuantity} liters available.`);
+      return;
+    }
+
+    handleRequest(bloodGroup, quantity);
   };
 
-  const handleRequest = async (bloodGroup) => {
+  const handleRequest = async (bloodGroup, quantity) => {
     try {
       const requestData = {
         receiverId: user._id,
         receiverName: user.name,
         bloodGroup: bloodGroup,
         contactInfo: user.phone,
+        quantity,
       };
-      console.log(id)
+      console.log(requestData)
       await axios.post(
         `http://localhost:5050/lifeflow/api/hospital/${id}/request`,
         requestData
@@ -171,11 +180,11 @@ const Hospital = ({
               </div>
             </div>
             {bloodBank?.length > 0 ? (
-              <h3 className=" text-center text-gray-600 mb-2">
+              <h3 className="w-full px-1 text-gray-600 mb-2">
                 Bloodbank available
               </h3>
             ) : (
-              <h3 className=" text-center text-gray-600 py-4">
+              <h3 className="w-full px-2 text-center text-gray-600 py-4">
                 No blood available.
               </h3>
             )}
@@ -186,11 +195,10 @@ const Hospital = ({
                   className={`bg-orange-100 flex flex-col items-center p-2 rounded-[4px] border border-gray-400 border-dashed shadow-sm`}
                 >
                   <div
-                    className={`h-[60px] rounded-[5px] flex items-center border border-dashed justify-center flex-col w-full ${
-                      bloodBank[bloodGroup].bloodType.includes("+")
-                        ? "bg-green-200 text-green-600 border-green-600"
-                        : "bg-red-200 text-red-600 border-red-600"
-                    }`}
+                    className={`h-[60px] rounded-[5px] flex items-center border border-dashed justify-center flex-col w-full ${bloodBank[bloodGroup].bloodType.includes("+")
+                      ? "bg-green-200 text-green-600 border-green-600"
+                      : "bg-red-200 text-red-600 border-red-600"
+                      }`}
                   >
                     <h1 className="text-center text-lg font-medium">
                       {bloodBank[bloodGroup].bloodType} Blood
@@ -203,16 +211,33 @@ const Hospital = ({
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleClick(bloodGroup)}
-                    className="text-white px-2 py-1 my-1 text-center text-xs bg-green-600 rounded-[5px]"
-                    aria-label="Request Blood"
-                  >
-                    Request
-                  </button>
                 </div>
               ))}
             </div>
+            {bloodBank?.length > 0 ? (
+              <div>
+                <h3 className="w-full px-1 text-gray-600 mt-4">
+                  Request Blood
+                </h3>
+                <select
+                  className="bg-white text-gray-600 border border-gray-300 outline-none text-sm rounded-[7px] h-8 px-2 shadow-sm"
+                >
+                  {Object.keys(bloodBank).map((bloodGroup, index) => (
+                    <option value={bloodBank[bloodGroup].bloodType}>{bloodBank[bloodGroup].bloodType} Blood</option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min="0.5"
+                  step={0.1}
+                  placeholder="Enter quantity (liters)"
+                  className="border border-gray-400 rounded-[5px] text-gray-700 text-sm p-1 w-full"
+                />
+              </div>
+
+            ) : (
+              <div></div>
+            )}
             <div className="w-full flex justify-end">
               <button
                 onClick={handleCloseModal}

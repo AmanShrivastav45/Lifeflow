@@ -45,7 +45,6 @@ const DonorProfile = () => {
     if (isEditModeOn) {
       let updatedFields = {};
       if (name !== userDetails.name) updatedFields.name = name;
-      if (email !== userDetails.email) updatedFields.email = email;
       if (phone !== userDetails.phone) updatedFields.phone = phone;
       if (gender !== userDetails.gender) updatedFields.gender = gender;
       if (bloodGroup !== userDetails.bloodGroup)
@@ -221,8 +220,8 @@ const DonorProfile = () => {
               </button>
               {isProfileButtonOpen && user ? (
                 <div
-                className="absolute right-0 top-full  min-w-48 mt-1 w-auto bg-white shadow-xl border border-gray-300 rounded-[5px]"
-                style={{ right: "10px", top: "25px" }}
+                  className="absolute right-0 top-full  min-w-48 mt-1 w-auto bg-white shadow-xl border border-gray-300 rounded-[5px]"
+                  style={{ right: "10px", top: "25px" }}
                 >
                   <div
                     className="text-gray-600"
@@ -272,11 +271,10 @@ const DonorProfile = () => {
                           maxLength={16}
                           type="text"
                           placeholder="Enter your username"
-                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                            !isEditModeOn
+                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${!isEditModeOn
                               ? "cursor-not-allowed text-gray-400 bg-gray-100"
                               : ""
-                          }`}
+                            }`}
                           onChange={(e) => setName(e.target.value)}
                           value={name}
                         />
@@ -286,17 +284,9 @@ const DonorProfile = () => {
                           <h1 className="text-xs mb-1 ml-0.5 mr-1">Email</h1>
                         </div>
                         <input
-                          disabled={!isEditModeOn}
-                          maxLength={30}
+                          disabled={true}
                           type="text"
-                          placeholder="Enter your email address"
-                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                            !isEditModeOn
-                              ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                              : ""
-                          }`}
-                          onChange={(e) => setEmail(e.target.value)}
-                          value={email}
+                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 focus:outline-blue-400 px-2 h-9 text-xs rounded-[5px] flex items-center justify-center cursor-not-allowed text-gray-400 bg-white`}
                         />
                       </div>
                       <div className="w-[33%] flex flex-col ml-1">
@@ -310,11 +300,10 @@ const DonorProfile = () => {
                           maxLength={10}
                           type="text"
                           placeholder="Enter your phone number"
-                          className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                            !isEditModeOn
+                          className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${!isEditModeOn
                               ? "cursor-not-allowed text-gray-400 bg-gray-100"
                               : ""
-                          }`}
+                            }`}
                           onChange={(e) => {
                             const value = e.target.value;
                             if (/^\d*$/.test(value)) {
@@ -339,11 +328,10 @@ const DonorProfile = () => {
                         onChange={(e) => {
                           setBloodGroup(e.target.value);
                         }}
-                        className={`border border-gray-400 w-full caret-black sm:placeholder:text-gray-700 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
+                        className={`border border-gray-400 w-full caret-black sm:placeholder:text-gray-700 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${!isEditModeOn
                             ? "cursor-not-allowed text-gray-400 bg-gray-100"
                             : ""
-                        }`}
+                          }`}
                       >
                         <option hidden>Blood group</option>
                         <option value="A+">A+</option>
@@ -366,11 +354,10 @@ const DonorProfile = () => {
                         onChange={(e) => {
                           setGender(e.target.value);
                         }}
-                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
+                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${!isEditModeOn
                             ? "cursor-not-allowed text-gray-400 bg-gray-100"
                             : ""
-                        }`}
+                          }`}
                       >
                         <option hidden>Gender</option>
                         <option value="male">Male</option>
@@ -388,11 +375,10 @@ const DonorProfile = () => {
                         onChange={(e) => {
                           setCity(e.target.value);
                         }}
-                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
+                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${!isEditModeOn
                             ? "cursor-not-allowed text-gray-400 bg-gray-100"
                             : ""
-                        }`}
+                          }`}
                       >
                         <option hidden>Select your city</option>
                         <option value="andheri">Andheri</option>
@@ -412,11 +398,10 @@ const DonorProfile = () => {
                         maxLength={6}
                         type="text"
                         placeholder="Enter your pincode"
-                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
+                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${!isEditModeOn
                             ? "cursor-not-allowed text-gray-400 bg-gray-100"
                             : ""
-                        }`}
+                          }`}
                         onChange={(e) => {
                           const value = e.target.value;
                           if (/^\d*$/.test(value)) {
@@ -459,8 +444,8 @@ const DonorProfile = () => {
                           isEditModeOn
                             ? handleUpdateProfile
                             : () => {
-                                setIsEditModeOn(!isEditModeOn);
-                              }
+                              setIsEditModeOn(!isEditModeOn);
+                            }
                         }
                         className={`py-2 px-3 text-xs font-medium  text-white rounded-[5px] flex items-center justify-center 
                             ${isEditModeOn ? "bg-green-600" : "bg-[#FF6C37]"}`}

@@ -845,9 +845,9 @@ export const makeDonationRequest = async (req, res) => {
 
 export const makeDonationRequestfromHospital = async (req, res) => {
   try {
-    const { receiverId, receiverName, bloodGroup, contactInfo } = req.body;
+    const { receiverId, receiverName, bloodGroup, contactInfo, quantity } = req.body;
     const { hospitalId } = req.params;
-    console.log(receiverId, receiverName, bloodGroup, hospitalId);
+    console.log(receiverId, receiverName, bloodGroup, hospitalId, quantity);
 
     const receiver = await Reciever.findById(receiverId);
     if (!receiver) {
@@ -859,16 +859,15 @@ export const makeDonationRequestfromHospital = async (req, res) => {
       return res.status(404).json({ message: "Hospital not found." });
     }
 
-    console.log("Here");
     const newRequest = {
       receiverId,
       receiverName,
       bloodGroup,
       contactInfo,
+      quantityInLiters: quantity,
       requestedAt: new Date(),
       status: CONSTANTS.STATUS.PENDING,
     };
-    console.log("Her2");
 
     try {
       hospital.requestsReceived.push(newRequest);

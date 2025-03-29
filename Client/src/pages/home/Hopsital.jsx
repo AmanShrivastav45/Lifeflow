@@ -398,18 +398,17 @@ const Hopsital = () => {
                       .padStart(2, "0");
                     const period = hours >= 12 ? "pm" : "am";
 
-                    // Convert day to ordinal format (1st, 2nd, 3rd, etc.)
                     const getOrdinal = (n) => {
                       if (n > 3 && n < 21) return `${n}th`;
                       switch (n % 10) {
                         case 1:
-                          return `${n}<sup>st</sup>`;
+                          return `${n}st`;
                         case 2:
-                          return `${n}<sup>nd</sup>`;
+                          return `${n}nd`;
                         case 3:
-                          return `${n}<sup>rd</sup>`;
+                          return `${n}rd`;
                         default:
-                          return `${n}<sup>th</sup>`;
+                          return `${n}th`;
                       }
                     };
 
