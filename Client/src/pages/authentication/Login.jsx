@@ -126,10 +126,11 @@ const Login = () => {
               </button>
             </div>
           </div>
+          <Link to={"/reset-password"}className="text-[10px] text-blue-600 text-end mt-2 w-full">Forgot password?</Link>
           <button
             disabled={isLoading}
             type="submit"
-            className="h-9 mt-4 w-full text-sm font-semibold bg-[#FF6C37] text-white rounded-[5px] flex items-center justify-center"
+            className="h-9 mt-2 w-full text-sm font-semibold bg-[#FF6C37] text-white rounded-[5px] flex items-center justify-center"
           >
             {isLoading ? <Loader size={18} /> : "Login"}
           </button>

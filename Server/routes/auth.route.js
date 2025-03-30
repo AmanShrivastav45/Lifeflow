@@ -1,16 +1,8 @@
 import express from "express";
-import {
-  login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth,
-  addDonation, getAllDonations, getDonationsByDonor, healthCareSignup,
-  addBloodBankDetails, getBloodBankDetails, getAllHospitals, makeDonationRequest,
-  getDonorRequests, updateUser, makeDonationRequestfromHospital,
-  getHospitalRequests, getAllLabs, createAppointment, getAllLabRequests, filterDonation, uploadFile, getFiles, viewFile,
-  getFile,
-  getDonorAppointments
-} from "../controllers/auth.controller.js";
-import { verifyToken } from "../middlewares/auth.token.js";
 import multer from "multer";
 import path from "path";
+import { login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, addDonation, getAllDonations, getDonationsByDonor, healthCareSignup, addBloodBankDetails, getBloodBankDetails, getAllHospitals, makeDonationRequest, getDonorRequests, updateUser, makeDonationRequestfromHospital, getHospitalRequests, getAllLabs, createAppointment, getAllLabRequests, filterDonation,  uploadFile, getFiles, viewFile, getFile, getDonorAppointments } from "../controllers/auth.controller.js";
+import { verifyToken } from "../middlewares/auth.token.js";
 import { fileURLToPath } from "url";
 
 const router = express.Router();
@@ -44,7 +36,7 @@ router.post("/login", login);
 router.post("/logout", logout);
 router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
-router.post("/reset-password/:token", resetPassword);
+router.put("/reset-password/:role/:token", resetPassword);
 router.put("/:userId/update", updateUser);
 router.post("/donors/donations/:donorId", addDonation);
 router.get("/donors/donations", getAllDonations);

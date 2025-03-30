@@ -14,6 +14,7 @@ import mongoose from "mongoose";
 import { CONSTANTS } from "../../constants.js";
 import axios from 'axios';
 import { randomUUID } from "crypto";
+import { sendPasswordResetEmail } from "../utils/sendPasswordResetEmail.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -417,13 +418,24 @@ export const logout = async (request, response) => {
 };
 
 export const forgotPassword = async (request, response) => {
-  const { email } = request.body;
+  const { email, role } = request.body;
   try {
-    const user = await User.findOne({ email });
+    let UserModel;
+    if (role === CONSTANTS.ROLES.DONOR) {
+      UserModel = Donor;
+    } else if (role === CONSTANTS.ROLES.RECEIVER) {
+      UserModel = Reciever;
+    } else if (role === CONSTANTS.ROLES.HOSPITAL) {
+      UserModel = Hospital;
+    } else if (role === CONSTANTS.ROLES.LABORATORY) {
+      UserModel = Laboratory;
+    }
+
+    const user = await UserModel.findOne({ email });
     if (!user)
       return response
         .status(400)
-        .json({ success: false, message: "User not found" });
+        .json({ success: false, message: "User doesn't exist!" });
 
     const resetToken = generateOTP();
     const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
@@ -434,8 +446,9 @@ export const forgotPassword = async (request, response) => {
     await user.save();
     await sendPasswordResetEmail(
       user.email,
-      `${process.env.CLIENT_URL}/reset-password/${resetToken}`
+      `${process.env.CLIENT_URL}/reset-password/${UserModel}/${resetToken}`
     );
+    console.log("URL: ",`${process.env.CLIENT_URL}/reset-password/${role}/${resetToken}`)
     response.status(200).json({
       success: true,
       message: "Password reset link sent to your email",
@@ -448,18 +461,28 @@ export const forgotPassword = async (request, response) => {
 
 export const resetPassword = async (request, response) => {
   try {
-    const { token } = request.params;
+    const { role, token } = request.params;
     const { password } = request.body;
-    const user = await User.findOne({
+    let UserModel;
+    if (role === CONSTANTS.ROLES.DONOR) {
+      UserModel = Donor;
+    } else if (role === CONSTANTS.ROLES.RECEIVER) {
+      UserModel = Reciever;
+    } else if (role === CONSTANTS.ROLES.HOSPITAL) {
+      UserModel = Hospital;
+    } else if (role === CONSTANTS.ROLES.LABORATORY) {
+      UserModel = Laboratory;
+    }
+    const user = await UserModel.findOne({
       resetPasswordToken: token,
       resetPasswordExpiresAt: { $gt: Date.now() },
     });
-
+    
     if (!user)
       return response
-        .status(400)
-        .json({ success: false, message: "Invalid or expired reset token" });
-
+    .status(400)
+    .json({ success: false, message: "Invalid or expired reset token" });
+    
     const hashedPassword = await bcryptjs.hash(password, 10);
     user.password = hashedPassword;
     user.resetPasswordToken = undefined;
@@ -916,7 +939,7 @@ export const createAppointment = async (req, res) => {
       appointmentId: appointmentNumber,
       labname: laboratory.name,
       labemail: laboratory.email,
-      labphone : laboratory.phone,
+      labphone: laboratory.phone,
     };
 
     try {

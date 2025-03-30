@@ -22,6 +22,8 @@ import ReceiverProfile from "./profile/ReceiverProfile.jsx";
 import HospitalProfile from "./profile/HospitalProfile.jsx";
 import LaboratoryProfile from "./profile/LaboratoryProfile.jsx";
 import About from "./pages/common/About.jsx";
+import ResetPassword from "./pages/authentication/ResetPassword.jsx";
+import SetNewPassword from "./pages/authentication/SetNewPassword.jsx";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useAuthStore();
@@ -96,6 +98,8 @@ function App() {
               }
             />
             <Route path="/verify-email" element={<Verification />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/reset-password/:role/:token" element={<SetNewPassword />} />
 
           {/* ---------------- Authentication Pages Ends ---------------- */}
 
