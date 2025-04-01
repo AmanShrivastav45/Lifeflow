@@ -210,6 +210,7 @@ const HospitalProfile = () => {
                         <input
                           disabled={true}
                           type="text"
+                          value={email}
                           className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 focus:outline-blue-400 px-2 h-9 text-xs rounded-[5px] flex items-center justify-center cursor-not-allowed text-gray-400 bg-white`}
                         />
                       </div>

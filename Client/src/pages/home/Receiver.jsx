@@ -104,9 +104,9 @@ const Receiver = () => {
           donationType:
             donationType?.length > 0
               ? donationType.map(
-                  (type) =>
-                    type.charAt(0).toLowerCase() + type.slice(1).toLowerCase()
-                )
+                (type) =>
+                  type.charAt(0).toLowerCase() + type.slice(1).toLowerCase()
+              )
               : undefined,
         };
 
@@ -114,7 +114,7 @@ const Receiver = () => {
           `http://localhost:5050/lifeflow/api/donors/donations/filter`,
           { params }
         );
-        
+
         setFilteredDonations(response.data);
         console.log(filteredDonations)
       } catch (error) {
@@ -186,19 +186,24 @@ const Receiver = () => {
                 </button>
                 <button
                   onClick={() => setTab("bloodbank")}
-                  className={`flex items-center justify-center mx-4 ml-2 ${
-                    tab === "bloodbank" ? "text-gray-700" : "text-gray-400"
-                  }`}
+                  className={`flex items-center justify-center mx-4 ml-2 ${tab === "bloodbank" ? "text-gray-700" : "text-gray-400"
+                    }`}
                 >
                   Bloodbank
                 </button>
                 <button
                   onClick={() => setTab("hospitals")}
-                  className={`flex items-center justify-center mx-4 ${
-                    tab === "hospitals" ? "text-gray-700" : "text-gray-400"
-                  }`}
+                  className={`flex items-center justify-center mx-4 ${tab === "hospitals" ? "text-gray-700" : "text-gray-400"
+                    }`}
                 >
                   Hospitals
+                </button>
+                <button
+                  onClick={() => setTab("requests")}
+                  className={`flex items-center justify-center mx-4 ${tab === "requests" ? "text-gray-700" : "text-gray-400"
+                    }`}
+                >
+                  Your Requests
                 </button>
               </div>
             </div>
@@ -370,7 +375,7 @@ const Receiver = () => {
             />
           )}
         </div>
-      ) : (
+      ) : tab === "hospitals" ? (
         <div className="h-full w-full mt-16 flex items-center justify-center text-white overflow-y-auto hide-scrollbar">
           <div className="w-full xl:w-[1280px] flex text-gray-500 sm:p-3 h-full hide-scrollbar">
             <div className="h-full w-full px-2 flex flex-col">
@@ -433,6 +438,8 @@ const Receiver = () => {
             </div>
           </div>
         </div>
+      ) : (
+        <div></div>
       )}
     </div>
   );

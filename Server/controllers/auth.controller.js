@@ -35,7 +35,7 @@ const appointmentFeedback = async (extractedText) => {
     });
     return response.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   } catch (error) {
-    console.error("Error getting feedback from OpenAI:", error);
+    
     throw new Error("Error getting feedback from OpenAI");
   }
 };
@@ -97,7 +97,7 @@ export const uploadFile = async (req, res) => {
     };
     res.json(response);
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({ message: "File upload failed" });
   }
 };
@@ -127,7 +127,7 @@ export const viewFile = async (req, res) => {
     const filePath = path.join(__dirname, "../uploads", filename);
     res.sendFile(filePath);
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({ message: "Error retrieving file" });
   }
 };
@@ -213,7 +213,7 @@ export const signup = async (request, response) => {
     try {
       await newUser.save();
     } catch (error) {
-      console.error("Error saving user:", error);
+      
       return w
         .status(400)
         .json({ success: false, message: "Error saving user" });
@@ -239,7 +239,7 @@ export const healthCareSignup = async (request, response) => {
   const { role, name, email, phone, address, city, pincode, password } =
     request.body;
   try {
-    console.log(role, name, email, phone, address, city, pincode, password);
+    
     if (
       !role ||
       !name ||
@@ -294,7 +294,7 @@ export const healthCareSignup = async (request, response) => {
     try {
       await newUser.save();
     } catch (error) {
-      console.error("Error saving user:", error);
+      
       return response
         .status(400)
         .json({ success: false, message: "Error saving user" });
@@ -331,7 +331,7 @@ export const verifyEmail = async (request, response) => {
       UserModel = Laboratory;
     }
 
-    console.log(UserModel);
+    
     const user = await UserModel.findOne({
       verificationToken: OTP,
       verificationTokenExpiresAt: { $gt: Date.now() },
@@ -360,7 +360,7 @@ export const verifyEmail = async (request, response) => {
       },
     });
   } catch (error) {
-    console.log("Error in verifyEmail: ", error);
+    
     response.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -405,7 +405,7 @@ export const login = async (request, response) => {
       },
     });
   } catch (error) {
-    console.log("Error in login ", error);
+    
     response.status(400).json({ success: false, message: error.message });
   }
 };
@@ -448,13 +448,13 @@ export const forgotPassword = async (request, response) => {
       user.email,
       `${process.env.CLIENT_URL}/reset-password/${UserModel}/${resetToken}`
     );
-    console.log("URL: ",`${process.env.CLIENT_URL}/reset-password/${role}/${resetToken}`)
+    
     response.status(200).json({
       success: true,
       message: "Password reset link sent to your email",
     });
   } catch (error) {
-    console.log("Error in forgotPassword ", error);
+    
     response.status(400).json({ success: false, message: error.message });
   }
 };
@@ -492,7 +492,7 @@ export const resetPassword = async (request, response) => {
       .status(200)
       .json({ success: true, message: "Password reset successful" });
   } catch (error) {
-    console.log("Error in resetPassword ", error);
+    
     response.status(400).json({ success: false, message: error.message });
   }
 };
@@ -524,7 +524,7 @@ export const addDonation = async (req, res) => {
     quantity,
   } = req.body;
 
-  console.log("Request Body:", req.body);
+  
 
   try {
     const donor = await Donor.findById(donorId);
@@ -532,7 +532,7 @@ export const addDonation = async (req, res) => {
       return res.status(404).json({ message: "Donor not found" });
     }
 
-    console.log("Donor found:", donor);
+    
 
     const donation = new Donation({
       donorId,
@@ -547,12 +547,12 @@ export const addDonation = async (req, res) => {
     });
 
     await donation.save();
-    donor.donations.push(donation._id);
+    donor.donations.push(donation);
     await donor.save();
 
     res.status(201).json({ message: "Donation added successfully", donation });
   } catch (error) {
-    console.error("Error adding donation:", error);
+    
     res
       .status(500)
       .json({ message: "Error adding donation", error: error.message });
@@ -562,7 +562,7 @@ export const addDonation = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { _id, role, ...updateFields } = req.body;
-    console.log(req.body);
+    
 
     let updatedUser;
 
@@ -588,7 +588,7 @@ export const updateUser = async (req, res) => {
       });
     }
 
-    console.log("updated: ", updatedUser);
+    
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -622,7 +622,7 @@ export const getAllHospitals = async (req, res) => {
 
     res.status(200).json(hospitals);
   } catch (error) {
-    console.error("Error fetching hospitals:", error);
+    
     res
       .status(404)
       .json({ message: "Error fetching hospitals", error: error.message });
@@ -639,7 +639,7 @@ export const getAllLabs = async (req, res) => {
 
     res.status(200).json(labs);
   } catch (error) {
-    console.error("Error fetching Laboratories:", error);
+    
     res
       .status(404)
       .json({ message: "Error fetching labs", error: error.message });
@@ -662,7 +662,7 @@ export const getAllLabRequests = async (req, res) => {
 
     res.status(200).json({ appointments: lab.appointments });
   } catch (error) {
-    console.error("Error fetching appointments:", error);
+    
     res
       .status(500)
       .json({ message: "Error fetching appointments", error: error.message });
@@ -765,7 +765,7 @@ export const addBloodBankDetails = async (req, res) => {
       .status(200)
       .json({ message: "Blood bank details updated successfully" });
   } catch (error) {
-    console.error("Error adding blood bank details:", error);
+    
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -779,12 +779,12 @@ export const getBloodBankDetails = async (req, res) => {
       return res.status(404).json({ message: "Hospital not found" });
     }
 
-    console.log(hospital.bloodBank);
+    
     res.status(200).json({
       bloodBank: hospital.bloodBank,
     });
   } catch (error) {
-    console.error("Error fetching blood bank details:", error);
+    
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -800,12 +800,12 @@ export const getHospitalRequests = async (req, res) => {
       return res.status(404).json({ message: "Hospital not found" });
     }
 
-    console.log(hospital.requestsReceived);
+    
     res.status(200).json({
       requestsReceived: hospital.requestsReceived,
     });
   } catch (error) {
-    console.error("Error fetching requests", error);
+    
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -828,7 +828,7 @@ export const makeDonationRequest = async (req, res) => {
     if (!donor) {
       return res.status(404).json({ message: "Donotion not found." });
     }
-    console.log(receiver, donor, donation);
+    
 
     const newRequest = {
       receiverId,
@@ -848,20 +848,20 @@ export const makeDonationRequest = async (req, res) => {
       donor.requestsReceived.push(newRequest);
       await donor.save();
     } catch (error) {
-      console.error("Error saving user:", error);
+      console.log(error)
       return res
         .status(400)
         .json({ success: false, message: "Error saving user" });
     }
 
-    receiver.requests.push(newRequest._id);
+    receiver.requests.push(newRequest);
     await receiver.save();
 
     res
       .status(201)
       .json({ message: "Donation request sent successfully.", receiver });
   } catch (error) {
-    console.error("Error sending donation request:", error);
+    
     res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -870,7 +870,7 @@ export const makeDonationRequestfromHospital = async (req, res) => {
   try {
     const { receiverId, receiverName, bloodGroup, contactInfo, quantity } = req.body;
     const { hospitalId } = req.params;
-    console.log(receiverId, receiverName, bloodGroup, hospitalId, quantity);
+    
 
     const receiver = await Reciever.findById(receiverId);
     if (!receiver) {
@@ -896,7 +896,7 @@ export const makeDonationRequestfromHospital = async (req, res) => {
       hospital.requestsReceived.push(newRequest);
       await hospital.save();
     } catch (error) {
-      console.error("Error saving user:", error);
+      
       return res
         .status(400)
         .json({ success: false, message: "Error saving user" });
@@ -905,7 +905,7 @@ export const makeDonationRequestfromHospital = async (req, res) => {
       .status(201)
       .json({ message: "Donation request sent successfully.", receiver });
   } catch (error) {
-    console.error("Error sending donation request:", error);
+    
     res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -914,8 +914,8 @@ export const createAppointment = async (req, res) => {
   try {
     const { laboratoryId } = req.params;
     const { donorId, category, date, timeslot, phone } = req.body;
-    console.log("LabId:", laboratoryId);
-    console.log("FormData:", donorId, category, date, timeslot, phone);
+    
+    
 
     const donor = await Donor.findById(donorId);
     if (!donor) {
@@ -948,7 +948,7 @@ export const createAppointment = async (req, res) => {
       donor.appointments.push(newAppointment);
       await donor.save();
     } catch (error) {
-      console.error("Error", error);
+      
       return res
         .status(400)
         .json({ success: false, message: "Error saving user" });
@@ -957,7 +957,7 @@ export const createAppointment = async (req, res) => {
       .status(201)
       .json({ message: "Donation request sent successfully.", laboratory });
   } catch (error) {
-    console.error("Error sending donation request:", error);
+    
     res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -976,7 +976,7 @@ export const getDonorRequests = async (req, res) => {
 
     res.status(200).json({ success: true, data: donor.requestsReceived || [] });
   } catch (error) {
-    console.error("Error fetching donor requests:", error);
+    
     res
       .status(500)
       .json({ success: false, message: "Server Error", error: error.message });
@@ -1015,7 +1015,7 @@ export const makeDonationRequesttoHospital = async (req, res) => {
 
     res.status(201).json({ message: "Donation request sent successfully." });
   } catch (error) {
-    console.error("Error sending donation request:", error);
+    
     res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -1041,7 +1041,7 @@ export const filterDonation = async (req, res) => {
     const filteredDonations = await Donation.find(filter).exec();
     res.json(filteredDonations);
   } catch (error) {
-    console.error(error);
+    
     res.status(500).json({ message: "Error filtering donations" });
   }
 };

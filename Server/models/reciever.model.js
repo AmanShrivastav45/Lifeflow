@@ -1,6 +1,71 @@
 import mongoose from "mongoose";
 import { CONSTANTS } from "../../constants.js";
 
+const RequestSchema = new mongoose.Schema(
+  {
+    receiverId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: CONSTANTS.SCHEMA.RECEIVER,
+      required: false,
+    },
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: CONSTANTS.SCHEMA.DONOR,
+      required: false,
+    },
+    donationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Donation",
+      required: false,
+    },
+    name: {
+      type: String,
+      required: false,
+      trim: true,
+      minlength: 3,
+      maxlength: 50,
+    },
+    email: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    phone: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 15,
+    },
+    bloodGroup: {
+      type: String,
+      required: true,
+      enum: Object.values(CONSTANTS.BLOODGROUP)
+    },
+    city: {
+      type: String,
+      required: true,
+      enum: Object.values(CONSTANTS.CITY)
+    },
+    donationType: {
+      type: String,
+      required: true
+    },
+    requestedAt: {
+      type: Date,
+      default: Date.now
+    },
+    status: {
+      type: String,
+      enum: Object.values(CONSTANTS.STATUS),
+      default: CONSTANTS.STATUS.PENDING,
+    },
+  },
+);
+
 const RecieverSchema = new mongoose.Schema(
   {
     name: {
@@ -36,9 +101,7 @@ const RecieverSchema = new mongoose.Schema(
       enum: Object.values(CONSTANTS.GENDER),
     },
     city: { type: String, required: true, enum: Object.values(CONSTANTS.CITY) },
-    requests: [
-      { type: mongoose.Schema.Types.ObjectId, ref: 'Requests' },
-    ],
+    requests: [RequestSchema],
     pincode: {
       type: String,
       required: true,
