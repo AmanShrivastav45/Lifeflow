@@ -18,6 +18,7 @@ const RequestSchema = new mongoose.Schema(
       ref: "Donation",
       required: false,
     },
+    //receiver details
     name: {
       type: String,
       required: false,
@@ -49,6 +50,41 @@ const RequestSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: Object.values(CONSTANTS.CITY)
+    },
+    // donor
+    donor_name: {
+      type: String,
+      required: false,
+      trim: true,
+      minlength: 3,
+      maxlength: 50,
+    },
+    donor_email: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
+    donor_phone: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 15,
+    },
+    donor_city: {
+      type: String,
+      required: false,
+    },
+    donor_pincode: {
+      type: String,
+      required: false,
+    },
+    donor_address: {
+      type: String,
+      required: false,
     },
     donationType: {
       type: String,

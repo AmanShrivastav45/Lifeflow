@@ -44,12 +44,12 @@ const Donation = ({
             <h2 className="text-xs text-gray-500">
               {donationType.toUpperCase()}
             </h2>
-            <h3 className="text-lg font-medium">{address.charAt(0).toUpperCase() + address.slice(1).toLowerCase()}, {city.charAt(0).toUpperCase() + city.slice(1).toLowerCase()}</h3>
+            <h3 className="font-medium">{address.charAt(0).toUpperCase() + address.slice(1).toLowerCase()}, {city.charAt(0).toUpperCase() + city.slice(1).toLowerCase()}</h3>
           </div>
         </div>
         <div className="flex flex-col items-end">
           <button
-            className="px-2 py-0.5 rounded-[5px] bg-red-500 text-white flex items-center justify-center text-sm"
+            className="px-2 py-1 rounded-[4px] bg-red-500 text-white flex items-center justify-center text-xs"
             onClick={onClick}
           >
             Request
@@ -68,7 +68,6 @@ const Donation = ({
             <IoLocationSharp />
           </span>
           {pincode}
-          {}
         </p>
         <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
           <span className="mr-2">

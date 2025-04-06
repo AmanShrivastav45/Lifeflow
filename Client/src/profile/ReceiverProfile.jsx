@@ -7,6 +7,7 @@ import axios from "axios";
 import { CONSTANTS } from "../../../constants.js";
 import toast from "react-hot-toast";
 import Email from "../components/Email.jsx";
+import { IoLocationSharp } from "react-icons/io5";
 
 const ReceiverProfile = () => {
   const { user, logout } = useAuthStore();
@@ -26,12 +27,7 @@ const ReceiverProfile = () => {
   const [bloodGroup, setBloodGroup] = useState(userDetails.bloodGroup);
   const [city, setCity] = useState(userDetails.city);
   const [pincode, setPincode] = useState(userDetails.pincode);
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [modifiedFields, setModifiedFields] = useState({});
+  const receiver_requests = userDetails.requests;
 
   const handleLogout = () => {
     logout();
@@ -79,7 +75,7 @@ const ReceiverProfile = () => {
       setIsEditModeOn(false);
     }
   };
-  
+
   const handleChangePassword = () => {
     toast.success("An email has been sent!");
   };
@@ -109,8 +105,8 @@ const ReceiverProfile = () => {
               </button>
               {isProfileButtonOpen && user ? (
                 <div
-                className="absolute right-0 top-full mt-1 w-auto min-w-48 bg-white shadow-xl border border-gray-300 rounded-[5px]"
-                style={{ right: "10px", top: "25px" }}
+                  className="absolute right-0 top-full mt-1 w-auto min-w-48 bg-white shadow-xl border border-gray-300 rounded-[5px]"
+                  style={{ right: "10px", top: "25px" }}
                 >
                   <div
                     className="text-gray-600"
@@ -142,7 +138,7 @@ const ReceiverProfile = () => {
 
       <div className="h-full flex justify-center w-full mt-14">
         <div className="w-full xl:w-[1280px] flex px-4">
-          <div className=" w-[75%] h-full text-md overflow-y-hidden mx-4 mt-4">
+          <div className=" w-[75%] h-full text-md overflow-y-auto mx-4 mt-4">
             <div className="w-full h-auto bg-gradient-to-l from-[#fff7e4] to-white shadow-base border border-gray-300 p-4 py-3 rounded-[5px] overflow-y-auto">
               <div className="flex items-center justify-between mb-4 p-2">
                 <div className="w-full h-full flex items-center justify-center flex-col">
@@ -160,11 +156,10 @@ const ReceiverProfile = () => {
                           maxLength={16}
                           type="text"
                           placeholder="Enter your username"
-                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                            !isEditModeOn
-                              ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                              : ""
-                          }`}
+                          className={`Geist border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${!isEditModeOn
+                            ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                            : ""
+                            }`}
                           onChange={(e) => setName(e.target.value)}
                           value={name}
                         />
@@ -191,11 +186,10 @@ const ReceiverProfile = () => {
                           maxLength={10}
                           type="text"
                           placeholder="Enter your phone number"
-                          className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                            !isEditModeOn
-                              ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                              : ""
-                          }`}
+                          className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${!isEditModeOn
+                            ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                            : ""
+                            }`}
                           onChange={(e) => {
                             const value = e.target.value;
                             if (/^\d*$/.test(value)) {
@@ -220,11 +214,10 @@ const ReceiverProfile = () => {
                         onChange={(e) => {
                           setBloodGroup(e.target.value);
                         }}
-                        className={`border border-gray-400 w-full caret-black sm:placeholder:text-gray-700 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
-                            ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                            : ""
-                        }`}
+                        className={`border border-gray-400 w-full caret-black sm:placeholder:text-gray-700 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${!isEditModeOn
+                          ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                          : ""
+                          }`}
                       >
                         <option hidden>Blood group</option>
                         <option value="A+">A+</option>
@@ -247,11 +240,10 @@ const ReceiverProfile = () => {
                         onChange={(e) => {
                           setGender(e.target.value);
                         }}
-                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
-                            ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                            : ""
-                        }`}
+                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${!isEditModeOn
+                          ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                          : ""
+                          }`}
                       >
                         <option hidden>Gender</option>
                         <option value="male">Male</option>
@@ -269,11 +261,10 @@ const ReceiverProfile = () => {
                         onChange={(e) => {
                           setCity(e.target.value);
                         }}
-                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
-                            ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                            : ""
-                        }`}
+                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400  px-2 h-9 text-xs text-gray-600 rounded-[5px] flex items-center justify-center ${!isEditModeOn
+                          ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                          : ""
+                          }`}
                       >
                         <option hidden>Select your city</option>
                         <option value="andheri">Andheri</option>
@@ -293,11 +284,10 @@ const ReceiverProfile = () => {
                         maxLength={6}
                         type="text"
                         placeholder="Enter your pincode"
-                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${
-                          !isEditModeOn
-                            ? "cursor-not-allowed text-gray-400 bg-gray-100"
-                            : ""
-                        }`}
+                        className={`border border-gray-400 w-full caret-black placeholder:text-[#b0b7c3] sm:placeholder:text-gray-300 bg-white focus:outline-blue-400 px-2 h-9 text-xs text-black rounded-[5px] flex items-center justify-center ${!isEditModeOn
+                          ? "cursor-not-allowed text-gray-400 bg-gray-100"
+                          : ""
+                          }`}
                         onChange={(e) => {
                           const value = e.target.value;
                           if (/^\d*$/.test(value)) {
@@ -340,8 +330,8 @@ const ReceiverProfile = () => {
                           isEditModeOn
                             ? handleUpdateProfile
                             : () => {
-                                setIsEditModeOn(!isEditModeOn);
-                              }
+                              setIsEditModeOn(!isEditModeOn);
+                            }
                         }
                         className={`py-2 px-3 text-xs font-medium  text-white rounded-[5px] flex items-center justify-center 
                             ${isEditModeOn ? "bg-green-600" : "bg-[#FF6C37]"}`}
@@ -350,6 +340,55 @@ const ReceiverProfile = () => {
                       </button>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full h-auto bg-gradient-to-l my-4 from-[#fff7e4] to-white shadow-base border border-gray-300 p-4 py-3 rounded-[5px] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4 p-2">
+                <div className="w-full h-full flex items-center justify-center flex-col mb-8">
+                  <h1 className="my-2 mb-4 sm:mt-0 text-lg text-start w-full text-black">
+                    Your Requests
+                  </h1>
+                  {(receiver_requests.map((request) => (
+                    <div className="bg-white border border-gray-300 rounded-[5px] p-4 shadow-sm mb-4 w-full">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                        <div className="flex">
+                          <div
+                            className={`h-10 w-10 flex border  font-semibold items-center justify-center rounded-[50%] mr-4`}
+                          >
+                            {request.bloodGroup}
+                          </div>
+                          <div className="flex flex-col items-start justify-center">
+                            <h2 className="text-xs text-gray-500">
+                              {request.donationType.toUpperCase()}
+                            </h2>
+                            <h3 className="font-medium">{request.donor_address.charAt(0).toUpperCase() + request.donor_address.slice(1).toLowerCase()}, {city.charAt(0).toUpperCase() + city.slice(1).toLowerCase()}</h3>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <button
+                            className="px-2 py-1 rounded-[4px] bg-red-500 text-white flex items-center justify-center text-xs"
+                          >
+                            {request.status}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 mt-3 font-medium text-xs">
+                        <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                          <span className="">{request.donor_city.charAt(0).toUpperCase() + request.donor_city.slice(1).toLowerCase()}</span>
+                        </p>
+                        <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                          <span className="">{request.donor_phone}</span>
+                        </p>
+                        <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                          <span className="mr-1 mb-0.5">
+                            <IoLocationSharp />
+                          </span>
+                          {request.donor_pincode}
+                        </p>
+                      </div>
+                    </div>
+                  )))}
                 </div>
               </div>
             </div>

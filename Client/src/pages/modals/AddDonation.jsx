@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const AddDonation = ({ donorId, onCancel, userDetails }) => {
+  const prevDonationDate = userDetails.donations[userDetails.donations.length-1].createdAt
   const [donationType, setDonationType] = useState("blood");
   const [address, setAddress] = useState(userDetails.address);
   const [city, setCity] = useState(userDetails.city);
@@ -39,6 +40,22 @@ const AddDonation = ({ donorId, onCancel, userDetails }) => {
       setError("Please enter a valid quantity (greater than 0)");
       setLoading(false);
       return;
+    }
+
+    if (prevDonationDate) {
+      const lastDonation = new Date(prevDonationDate);
+      const today = new Date();
+  
+      const diffInTime = today.getTime() - lastDonation.getTime();
+      const diffInDays = diffInTime / (1000 * 60 * 60 * 24);
+  
+      if (diffInDays < 180) {
+        const remainingDays = Math.ceil(180 - diffInDays);
+        setError(`You must wait ${remainingDays} more day(s) before donating again.`);
+        toast.error(`You must wait ${remainingDays} days before donating again.`);
+        setLoading(false);
+        return;
+      }
     }
 
     try {

@@ -28,6 +28,7 @@ const Donor = () => {
   const isVerified = false;
   const receiverId = useParams().userId || null;
   const [tab, setTab] = useState("requests");
+  const prevDonationDate = userDetails.donations[userDetails.donations.length-1].createdAt
   const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
   const [bloodGroup, setBloodGroup] = useState([]);
   const [verificationModel, setVerificationModel] = useState(false);
@@ -45,6 +46,7 @@ const Donor = () => {
   const [filteredLaboratories, setfilteredLaboratories] = useState([]);
   const [donorAppointments, setDonorAppointments] = useState({});
   const [selectedReport, setSelectedReport] = useState("");
+  const [canDonate, setCanDonate] = useState('');
 
   const fetchDonorAppointments = async () => {
     try {

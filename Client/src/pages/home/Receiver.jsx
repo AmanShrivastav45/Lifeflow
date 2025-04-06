@@ -198,13 +198,6 @@ const Receiver = () => {
                 >
                   Hospitals
                 </button>
-                <button
-                  onClick={() => setTab("requests")}
-                  className={`flex items-center justify-center mx-4 ${tab === "requests" ? "text-gray-700" : "text-gray-400"
-                    }`}
-                >
-                  Your Requests
-                </button>
               </div>
             </div>
             <div className="flex relative items-center justify-between space-x-4">
@@ -375,7 +368,7 @@ const Receiver = () => {
             />
           )}
         </div>
-      ) : tab === "hospitals" ? (
+      ) : (
         <div className="h-full w-full mt-16 flex items-center justify-center text-white overflow-y-auto hide-scrollbar">
           <div className="w-full xl:w-[1280px] flex text-gray-500 sm:p-3 h-full hide-scrollbar">
             <div className="h-full w-full px-2 flex flex-col">
@@ -438,8 +431,6 @@ const Receiver = () => {
             </div>
           </div>
         </div>
-      ) : (
-        <div></div>
       )}
     </div>
   );

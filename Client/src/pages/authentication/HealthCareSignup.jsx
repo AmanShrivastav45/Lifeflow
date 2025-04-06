@@ -92,10 +92,19 @@ const HealthCareSignup = () => {
         pincode,
         password
       );
+      if (res.success === false){
+        toast.error(res.message)
+        return;
+      } 
       navigate("/verify-email");
     } catch (error) {
-      console.error(error);
-      toast.error(error);
+      console.log("here");
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong!";
+      console.error(message);
+      toast.error(message);
     }
   };
 

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const API_URL = "http://localhost:5050/lifeflow/api";
 
@@ -28,7 +29,8 @@ export const useAuthStore = create((set) => ({
         pincode: pincode,
         password: password,
       });
-      const userData = response.data.user;
+
+      const userData = response?.data?.user;
 
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("isAuthenticated", "true");
@@ -42,11 +44,12 @@ export const useAuthStore = create((set) => ({
       });
       
     } catch (error) {
+      console.error(error.response?.data?.message);
       set({
         error: error.response?.data?.message || "Error signing up",
         isLoading: false,
       });
-      throw error;
+      return (error.response?.data)
     }
   },
 
@@ -85,11 +88,12 @@ export const useAuthStore = create((set) => ({
         role: role,
       });
     } catch (error) {
+      console.error(error.response?.data?.message);
       set({
         error: error.response?.data?.message || "Error signing up",
         isLoading: false,
       });
-      throw error;
+      return (error.response?.data)
     }
   },
 
