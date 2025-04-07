@@ -6,7 +6,7 @@ import { VscVerifiedFilled } from "react-icons/vsc";
 import { VscUnverified } from "react-icons/vsc";
 import AddDonation from "../pages/modals/AddDonation.jsx";
 import axios from "axios";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoLocationSharp } from "react-icons/io5";
 import { CONSTANTS } from "../../../constants.js";
 import toast from "react-hot-toast";
 import Email from "../components/Email.jsx";
@@ -36,6 +36,7 @@ const DonorProfile = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+  const donor_donations = userDetails.donations;
 
   const handleLogout = () => {
     logout();
@@ -195,6 +196,23 @@ const DonorProfile = () => {
     setSelectedFile(null);
     setVerificationModel(false);
   };
+
+  const formatDateTime = (isoDateStr) => {
+    const date = new Date(isoDateStr);
+  
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("default", { month: "long" });
+    const year = date.getFullYear();
+  
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "pm" : "am";
+  
+    hours = hours % 12 || 12; // convert 0 → 12
+    const formattedHours = hours.toString().padStart(2, "0");
+  
+    return `${day} ${month}, ${year}, ${formattedHours}:${minutes}${ampm}`;
+  };  
 
   return (
     <div className="h-screen w-full flex justify-center">
@@ -464,7 +482,46 @@ const DonorProfile = () => {
                   <h1 className="my-2 mb-4 sm:mt-0 text-lg text-start w-full text-black">
                     Your Donations
                   </h1>
-                  
+                  {(donor_donations.map((donation) => (
+                    <div className="bg-white border border-gray-300 rounded-[5px] p-4 shadow-sm mb-4 w-full">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                        <div className="flex">
+                          <div
+                            className={`h-10 w-10 text-red-600 border border-red-600 flex bg-red-100 font-semibold items-center justify-center rounded-[50%] mr-4`}
+                          >
+                            {donation.bloodGroup}
+                          </div>
+                          <div className="flex flex-col items-start justify-center">
+                            <h2 className="text-xs text-gray-500">
+                              {donation.donationType.toUpperCase()}
+                            </h2>
+                            <h3 className="font-medium">{donation.address.charAt(0).toUpperCase() + donation.address.slice(1).toLowerCase()}, {donation.city.charAt(0).toUpperCase() + donation.city.slice(1).toLowerCase()}</h3>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <div
+                            className="px-2 py-1 rounded-[4px] bg-blue-500 text-white flex items-center justify-center text-xs"
+                          >
+                            {formatDateTime(donation.createdAt)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 mt-3 font-medium text-xs">
+                        <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                          <span className="">{donation.city.charAt(0).toUpperCase() + donation.city.slice(1).toLowerCase()}</span>
+                        </p>
+                        <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                          <span className="">{donation.phone}</span>
+                        </p>
+                        <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                          <span className="mr-1 mb-0.5">
+                            <IoLocationSharp />
+                          </span>
+                          {donation.pincode}
+                        </p>
+                      </div>
+                    </div>
+                  )))}
                 </div>
               </div>
             </div>

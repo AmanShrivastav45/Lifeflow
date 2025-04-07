@@ -312,13 +312,6 @@ const Donor = () => {
                 >
                   Appointments
                 </button>
-                <button
-                  onClick={() => setTab("donations")}
-                  className={`flex items-center justify-center mx-4 ${tab === "appointments" ? "text-gray-700" : "text-gray-400"
-                    }`}
-                >
-                  Your Donations
-                </button>
               </div>
             </div>
             <div className="flex relative items-center justify-between space-x-4">
@@ -624,7 +617,7 @@ const Donor = () => {
             </div>
           </div>
         </div>
-      ) : tab === "appointments" ? (
+      ) : (
         <div className="h-full flex justify-center w-full mt-14">
           <div className="w-full xl:w-[1280px] flex px-4">
             <div className="h-full w-[55%] flex flex-col mt-4">
@@ -708,7 +701,7 @@ const Donor = () => {
             </div>
           </div>
         </div>
-      ) : (<div></div>)}
+      )}
       {!isVerified && verificationModel ? (
         <div className="absolute top-0 left-0 w-full h-screen bg-black bg-opacity-65 flex items-center justify-center z-50">
           <div className="bg-gradient-to-l from-[#ffefc9] to-white relative p-5 rounded-[5px] border border-gray-300 shadow-lg w-[95%] md:w-[320px]">
