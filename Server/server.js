@@ -28,19 +28,23 @@ app.use("/lifeflow/api", authRoutes);
 app.post("/api/extract-hemoglobin", async (req, res) => {
   try {
     const { extractedText } = req.body;
-    
     const API_URL = process.env.OPEN_AI_KEY || "";
 
+    const prompt = `Check if the report belongs to the same person mentioned in the userDetails at the bottom of the text. If yes, extract the following from the blood report:
+
+    - Hemoglobin (g/dL)
+    - Total WBC count
+    - Neutrophils
+    - Lymphocytes
+    - Eosinophils
+    - Platelet count
+    
+    Return a JSON object where keys are the parameter names and values are either the extracted number or null if not found.
+    
+    Text: ${extractedText}`;
+
     const response = await axios.post(API_URL, {
-      contents: [
-        {
-          parts: [
-            {
-              text: `Extract the hemoglobin level from the following blood report text. Return only the numeric value in g/dL. If no hemoglobin level is found, return 'null'. text: ${extractedText}`
-            }
-          ]
-        }
-      ]
+      contents: [{ parts: [{ text: prompt }] }]
     });
 
     res.json(response.data);
@@ -49,6 +53,7 @@ app.post("/api/extract-hemoglobin", async (req, res) => {
     res.status(500).json({ message: "Error processing request", error });
   }
 });
+
 
 app.listen(PORT, async () => {
   await connectMongoDB();

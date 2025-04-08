@@ -28,7 +28,7 @@ const Donor = () => {
   const isVerified = false;
   const receiverId = useParams().userId || null;
   const [tab, setTab] = useState("requests");
-  const prevDonationDate = userDetails.donations[userDetails.donations.length-1].createdAt
+  const prevDonationDate = userDetails.donations[userDetails.donations.length - 1]?.createdAt
   const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
   const [bloodGroup, setBloodGroup] = useState([]);
   const [verificationModel, setVerificationModel] = useState(false);
@@ -200,40 +200,103 @@ const Donor = () => {
       try {
         const response = await axios.post(
           "http://localhost:5050/api/extract-hemoglobin",
-          {
-            extractedText: cleanedText,
-          }
+          { extractedText: cleanedText }
         );
-        hemoglobinLevel =
-          response.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
-        console.log("Extracted Hemoglobin Level:", response.data);
+        let rawText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+
+        // Remove markdown formatting like ```json and ```
+        rawText = rawText.replace(/```json|```/g, "").trim();
+
+        const resultData = JSON.parse(rawText);
+        console.log(resultData)
+        // Optionally handle if the model includes this flag (add this in your prompt or parse logic)
+        if (resultData?.matchedUser === false) {
+          setIsEligible(false);
+          setResult("The report does not match the userDetails provided. Please upload a valid report.");
+          return;
+        }
+
+        const {
+          "Hemoglobin (g/dL)": hemoglobin,
+          "Total WBC count": wbc,
+          "Neutrophils": neutrophils,
+          "Lymphocytes": lymphocytes,
+          "Eosinophils": eosinophils,
+          "Platelet count": platelets,
+        } = resultData;
+        
+        const reasons = [];
+
+        // Hemoglobin
+        const hb = parseFloat(hemoglobin);
+        if (!hb) {
+          reasons.push("Hemoglobin level not found.");
+        } else if (hb < 12.5) {
+          reasons.push(`Hemoglobin is ${hb} g/dL (min required: 12.5 g/dL).`);
+        }
+
+        // WBC
+        const wbcVal = parseFloat(wbc);
+        if (!wbcVal) {
+          reasons.push("WBC count not found.");
+        } else if (wbcVal < 4000 || wbcVal > 11000) {
+          reasons.push(`WBC count is ${wbcVal} (normal range: 4000–11000).`);
+        }
+
+        // Neutrophils
+        const neutroVal = parseFloat(neutrophils);
+        if (!neutroVal) {
+          reasons.push("Neutrophil count not found.");
+        } else if (neutroVal < 40 || neutroVal > 70) {
+          reasons.push(`Neutrophils are ${neutroVal}% (normal: 40–70%).`);
+        }
+
+        // Lymphocytes
+        const lymphoVal = parseFloat(lymphocytes);
+        if (!lymphoVal) {
+          reasons.push("Lymphocyte count not found.");
+        } else if (lymphoVal < 20 || lymphoVal > 40) {
+          reasons.push(`Lymphocytes are ${lymphoVal}% (normal: 20–40%).`);
+        }
+
+        // Eosinophils
+        const eosVal = parseFloat(eosinophils);
+        if (!eosVal) {
+          reasons.push("Eosinophil count not found.");
+        } else if (eosVal < 1 || eosVal > 6) {
+          reasons.push(`Eosinophils are ${eosVal}% (normal: 1–6%).`);
+        }
+
+        // Platelets
+        const pltVal = parseFloat(platelets);
+        if (!pltVal) {
+          reasons.push("Platelet count not found.");
+        } else if (pltVal < 150000 || pltVal > 450000) {
+          reasons.push(`Platelet count is ${pltVal} (normal: 150,000–450,000).`);
+        }
+
+        const isEligible = reasons.length === 0;
+        setIsEligible(isEligible);
+
+        if (isEligible) {
+          updateEligibility();
+          setResult("All values are within the healthy range. You are eligible to donate blood!");
+        } else {
+          setResult(
+            `You are currently not eligible to donate blood due to the following:\n\n- ${reasons.join("\n- ")}`
+          );
+        }
       } catch (error) {
         console.error("Error:", error);
-      }
-
-      if (hemoglobinLevel === "null\n") {
-        setResult("Hemoglobin level not found in the report.");
-        setIsEligible(false);
-      } else if (hemoglobinLevel >= 12.5) {
-        updateEligibility();
-        setIsEligible(true);
-        setResult(
-          `Your hemoglobin level is ${hemoglobinLevel} g/dL. You are eligible to donate blood!`
-        );
-      } else {
-        setIsEligible(false);
-        setResult(
-          `Your hemoglobin level is ${hemoglobinLevel} g/dL. You are not eligible to donate blood.`
-        );
+        setResult("There was an error processing the file. Please try again.");
+      } finally {
+        setLoading(false);
       }
     } catch (error) {
-      console.error("Error processing file:", error);
-      setResult("Error processing the file. Please try again.");
-    } finally {
-      setLoading(false);
+      console.log(error)
     }
-  };
+  }
 
   const handleCheckboxChange = (setter, stateArray, value) => {
     if (stateArray.includes(value)) {
