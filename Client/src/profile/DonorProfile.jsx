@@ -142,7 +142,7 @@ const DonorProfile = () => {
         const { data } = await Tesseract.recognize(file, "eng");
         extractedText = data.text;
       }
-      const cleanedText = extractedText.replace(/"/g, "");
+      const cleanedText = extractedText.replace(/"/g, "") + userDetails;
       let hemoglobinLevel;
       try {
         const response = await axios.post(

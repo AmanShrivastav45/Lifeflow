@@ -42,6 +42,7 @@ export const useAuthStore = create((set) => ({
         isLoading: false,
         role: role,
       });
+      return userData;
       
     } catch (error) {
       console.error(error.response?.data?.message);
@@ -87,6 +88,7 @@ export const useAuthStore = create((set) => ({
         isLoading: false,
         role: role,
       });
+      return userData;
     } catch (error) {
       console.error(error.response?.data?.message);
       set({
