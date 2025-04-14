@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const AddDonation = ({ donorId, onCancel, userDetails }) => {
-  const prevDonationDate = userDetails.donations[userDetails.donations.length-1].createdAt
+  const prevDonationDate = userDetails.donations[userDetails.donations.length-1]?.createdAt
   const [donationType, setDonationType] = useState("blood");
   const [address, setAddress] = useState(userDetails.address);
   const [city, setCity] = useState(userDetails.city);
