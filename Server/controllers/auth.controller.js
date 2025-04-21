@@ -697,7 +697,7 @@ export const getDonorAppointments = async (req, res) => {
 
     if (DonorAppointments.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json({ message: "No Appointments found" });
     }
 
@@ -808,6 +808,57 @@ export const getHospitalRequests = async (req, res) => {
   } catch (error) {
 
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateDonationRequest = async (req, res) => {
+  try {
+    const { requestId, receiverId, donorId, donationId, status } = req.body;
+    console.log(requestId)
+    const receiver = await Reciever.findById(receiverId);
+    if (!receiver) {
+      return res.status(404).json({ message: "Receiver not found." });
+    }
+
+    const donor = await Donor.findById(donorId);
+    if (!donor) {
+      return res.status(404).json({ message: "Donor not found." });
+    }
+
+    const donation = await Donation.findById(donationId);
+    if (!donation) {
+      return res.status(404).json({ message: "Donation not found." });
+    }
+
+    const donorRequest = donor.requestsReceived.find(
+      (req) => req._id.toString() === requestId
+    );
+
+    if (donorRequest) {
+      donorRequest.status = status;
+      console.log(donorRequest.requestedAt)
+    }
+    
+    const receiverRequest = receiver.requests.find(
+      (req) => req.requestedAt.toString() === donorRequest.requestedAt.toString()
+    );
+    
+    if (receiverRequest) {
+      console.log(receiverRequest.requestedAt)
+      receiverRequest.status = status;
+    }
+
+    await donor.save();
+    await receiver.save();
+
+    res.status(200).json({
+      message: "Donation request updated successfully.",
+      receiver,
+      donor,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 

@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, addDonation, getAllDonations, getDonationsByDonor, healthCareSignup, addBloodBankDetails, getBloodBankDetails, getAllHospitals, makeDonationRequest, getDonorRequests, updateUser, makeDonationRequestfromHospital, getHospitalRequests, getAllLabs, createAppointment, getAllLabRequests, filterDonation,  uploadFile, getFiles, viewFile, getFile, getDonorAppointments } from "../controllers/auth.controller.js";
+import { login, logout, signup, verifyEmail, forgotPassword, resetPassword, checkAuth, addDonation, getAllDonations, getDonationsByDonor, healthCareSignup, addBloodBankDetails, getBloodBankDetails, getAllHospitals, makeDonationRequest, getDonorRequests, updateUser, makeDonationRequestfromHospital, getHospitalRequests, getAllLabs, createAppointment, getAllLabRequests, filterDonation,  uploadFile, getFiles, viewFile, getFile, getDonorAppointments, updateDonationRequest } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/auth.token.js";
 import { fileURLToPath } from "url";
 
@@ -39,6 +39,7 @@ router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:role/:token", resetPassword);
 router.put("/:userId/update", updateUser);
 router.post("/donors/donations/:donorId", addDonation);
+router.put("/donors/donations/:donorId", updateDonationRequest);
 router.get("/donors/donations", getAllDonations);
 router.get("/donors/:donorId/donations", getDonationsByDonor);
 router.post('/hospital/:hospitalId/bloodbank', addBloodBankDetails);

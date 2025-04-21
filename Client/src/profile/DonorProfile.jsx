@@ -476,16 +476,16 @@ const DonorProfile = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full h-auto bg-gradient-to-l my-4 from-[#fff7e4] to-white shadow-base border border-gray-300 p-4 py-3 rounded-[5px] overflow-y-auto">
-              <div className="flex items-center justify-between mb-4 p-2">
-                <div className="w-full h-full flex items-center justify-center flex-col mb-8">
+            <div className="w-full h-[320px] bg-gradient-to-l my-4 from-[#fff7e4] to-white shadow-base border border-gray-300 p-4 py-3 rounded-[5px] ">
+              <div className="flex h-full items-center justify-between mb-4 p-2 ">
+                <div className="w-full h-full flex items-center justify-start flex-col my-8">
                   <h1 className="my-2 mb-4 sm:mt-0 text-lg text-start w-full text-black">
                     Your Donations
                   </h1>
                   {(donor_donations.map((donation) => (
                     <div className="bg-white border border-gray-300 rounded-[5px] p-4 shadow-sm mb-4 w-full">
-                      <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                        <div className="flex">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-center ">
+                        <div className="flex ">
                           <div
                             className={`h-10 w-10 text-red-600 border border-red-600 flex bg-red-100 font-semibold items-center justify-center rounded-[50%] mr-4`}
                           >

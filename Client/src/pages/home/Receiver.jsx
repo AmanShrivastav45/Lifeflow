@@ -10,6 +10,7 @@ import { useParams, NavLink, Link } from "react-router-dom";
 import { CONSTANTS } from "../../../../constants";
 import Email from "../../components/Email";
 import Hospital from "../components/Hospital";
+import { IoLocationSharp } from "react-icons/io5";
 
 const Receiver = () => {
   const { user, logout } = useAuthStore();
@@ -24,12 +25,19 @@ const Receiver = () => {
   const [showRequestDonation, setShowRequestDonation] = useState(false);
   const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState({});
-
+  const [acceptedRequests, setAcceptedRequests] = useState([]);
   const [tab, setTab] = useState("bloodbank");
   const [hospitals, setHospitals] = useState([]);
   const [filteredHospitals, setFilteredHospitals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [response, setResponse] = useState("");
+
+  useEffect(() => {
+    const accepted = userDetails?.requests?.filter(
+      (request) => request.status === "accepted"
+    );
+    setAcceptedRequests(accepted || []);
+  }, [userDetails]);
 
   useEffect(() => {
     const fetchHospitals = async () => {
@@ -198,6 +206,15 @@ const Receiver = () => {
                 >
                   Hospitals
                 </button>
+                {acceptedRequests &&
+                  <button
+                    onClick={() => setTab("accepted")}
+                    className={`flex items-center justify-center mx-4 ${tab === "accepted" ? "text-gray-700" : "text-gray-400"
+                      }`}
+                  >
+                    Accepted Requests
+                  </button>
+                }
               </div>
             </div>
             <div className="flex relative items-center justify-between space-x-4">
@@ -368,7 +385,7 @@ const Receiver = () => {
             />
           )}
         </div>
-      ) : (
+      ) : tab === "hospitals" ? (
         <div className="h-full w-full mt-16 flex items-center justify-center text-white overflow-y-auto hide-scrollbar">
           <div className="w-full xl:w-[1280px] flex text-gray-500 sm:p-3 h-full hide-scrollbar">
             <div className="h-full w-full px-2 flex flex-col">
@@ -431,6 +448,66 @@ const Receiver = () => {
             </div>
           </div>
         </div>
+      ) : (<div className="h-full w-full mt-16 flex items-center justify-center text-white overflow-y-auto hide-scrollbar">
+        <div className="w-full xl:w-[1280px] flex text-gray-500 sm:p-3 h-full hide-scrollbar">
+          <div className="h-full w-full px-2 flex flex-col">
+            <div className=" w-full flex flex-col items-center justify-start text-gray-500">
+              {acceptedRequests.length > 0 ? (
+                <div className="p-4 w-full text-gray-500 px-6 gap-6 overflow-y-auto hide-scrollbar grid grid-cols-3 ">
+                  {acceptedRequests.map((request) => (
+                    <div className="flex items-center border border-gray-300  justify-center bg-orange-50 rounded-[5px]">
+                      <div className=" rounded-[5px] p-4 w-full">
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                          <div className="flex">
+                            <div
+                              className={`h-10 w-10 flex font-semibold items-center justify-center rounded-[50%] mr-4`}
+                            >
+                              {request.bloodGroup}
+                            </div>
+                            <div className="flex flex-col items-start justify-center">
+                              <h2 className="text-xs text-gray-500">
+                                {request.donationType.toUpperCase()}
+                              </h2>
+                              <h3 className="font-medium">{request.donor_address.charAt(0).toUpperCase() + request.donor_address.slice(1).toLowerCase()}</h3>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <button
+                              className={`px-2 py-1 rounded-[4px] text-white flex items-center justify-center text-xs ${request.status === "accepted" ? 'bg-green-600' : 'bg-red-500'
+                                }`}
+                            >
+                              {request.status.charAt(0).toUpperCase() +
+                                request.status.slice(1).toLowerCase()}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex gap-3 mt-3 font-medium text-xs">
+                          <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                            <span className="">{request.donor_city.charAt(0).toUpperCase() + request.donor_city.slice(1).toLowerCase()}</span>
+                          </p>
+                          <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                            <span className="">{request.donor_phone}</span>
+                          </p>
+                          <p className=" px-2 p-1 text-blue-700 flex items-center justify-center border border-blue-600 bg-blue-100 rounded-[5px]">
+                            <span className="mr-1 mb-0.5">
+                              <IoLocationSharp />
+                            </span>
+                            {request.donor_pincode}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="h-full w-full flex items-center justify-center">
+                  No hospitals found.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
       )}
     </div>
   );

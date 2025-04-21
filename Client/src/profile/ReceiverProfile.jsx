@@ -367,9 +367,11 @@ const ReceiverProfile = () => {
                         </div>
                         <div className="flex flex-col items-end">
                           <button
-                            className="px-2 py-1 rounded-[4px] bg-red-500 text-white flex items-center justify-center text-xs"
+                            className={`px-2 py-1 rounded-[4px] text-white flex items-center justify-center text-xs ${request.status === "accepted" ? 'bg-green-600' : 'bg-red-500'
+                              }`}
                           >
-                            {request.status}
+                            {request.status.charAt(0).toUpperCase() +
+                              request.status.slice(1).toLowerCase()}
                           </button>
                         </div>
                       </div>

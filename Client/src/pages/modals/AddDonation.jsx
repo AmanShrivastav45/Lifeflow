@@ -54,12 +54,13 @@ const AddDonation = ({ donorId, onCancel, userDetails }) => {
         setError(`You must wait ${remainingDays} more day(s) before donating again.`);
         toast.error(`You must wait ${remainingDays} days before donating again.`);
         setLoading(false);
+        onCancel()
         return;
       }
     }
 
     try {
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:5050/lifeflow/api/donors/donations/:${donorId}`,
         {
           donorId,
@@ -72,6 +73,17 @@ const AddDonation = ({ donorId, onCancel, userDetails }) => {
           quantity,
         }
       );
+      console.log(response)
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+
+      if (storedUser) {
+        const existingDonations = storedUser.donations || [];
+        const updatedUser = {
+          ...storedUser,
+          donations: [...existingDonations, response.data.donation],
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }        
       toast.success("New donation created!")
       window.location.reload()
     } catch (error) {

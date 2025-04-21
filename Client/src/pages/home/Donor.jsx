@@ -13,6 +13,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import axios from "axios";
 import AddDonation from "../modals/AddDonation";
 import Hospital from "../components/Hospital";
+import toast from "react-hot-toast";
 import LabComp from "../components/LabComp";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -28,7 +29,7 @@ const Donor = () => {
   const isVerified = false;
   const receiverId = useParams().userId || null;
   const [tab, setTab] = useState("requests");
-  const prevDonationDate = userDetails.donations[userDetails.donations.length-1]?.createdAt
+  const prevDonationDate = userDetails.donations[userDetails.donations.length - 1]?.createdAt
   const [isProfileButtonOpen, setIsProfileButtonOpen] = useState(false);
   const [bloodGroup, setBloodGroup] = useState([]);
   const [verificationModel, setVerificationModel] = useState(false);
@@ -46,15 +47,13 @@ const Donor = () => {
   const [filteredLaboratories, setfilteredLaboratories] = useState([]);
   const [donorAppointments, setDonorAppointments] = useState({});
   const [selectedReport, setSelectedReport] = useState("");
-  const [canDonate, setCanDonate] = useState('');
 
   const fetchDonorAppointments = async () => {
     try {
       const response = await axios.get(
         `http://localhost:5050/lifeflow/api/donors/${userDetails._id}/appointments`
       );
-      const app = response.data;
-      console.log(app)
+      const app = response?.data;
       setDonorAppointments(app);
       const storedUser = JSON.parse(localStorage.getItem("user"));
 
@@ -64,6 +63,30 @@ const Donor = () => {
       }
     } catch (error) {
       console.error("Error fetching blood bank details:", error);
+    }
+  }
+
+  const updateRequest = async (requestId, donationId, receiverId, status) => {
+    console.log(status)
+    try {
+      const response = await axios.put(
+        `http://localhost:5050/lifeflow/api/donors/donations/:${donorId}`,
+        {
+          requestId: requestId,
+          receiverId: receiverId,
+          donationId: donationId,
+          donorId: donorId,
+          status: status,
+        }
+      );
+      const updatedUser = response?.data?.donor;
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      toast.success("Updated donation!")
+      window.location.reload()
+    } catch (error) {
+
+      
+      console.error(error);
     }
   }
 
@@ -191,7 +214,6 @@ const Donor = () => {
           extractedText += textContent.items.map((item) => item.str).join(" ");
         }
       } else {
-        // For image files
         const { data } = await Tesseract.recognize(file, "eng");
         extractedText = data.text;
       }
@@ -305,13 +327,15 @@ const Donor = () => {
                 >
                   Laboratories
                 </button>
-                <button
-                  onClick={() => setTab("appointments")}
-                  className={`flex items-center justify-center mx-4 ${tab === "appointments" ? "text-gray-700" : "text-gray-400"
-                    }`}
-                >
-                  Appointments
-                </button>
+                {appointmentDetails.length > 0 &&
+                  <button
+                    onClick={() => setTab("appointments")}
+                    className={`flex items-center justify-center mx-4 ${tab === "appointments" ? "text-gray-700" : "text-gray-400"
+                      }`}
+                  >
+                    Appointments
+                  </button>
+                }
               </div>
             </div>
             <div className="flex relative items-center justify-between space-x-4">
@@ -442,7 +466,7 @@ const Donor = () => {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="bg-white text-gray-600 border border-gray-300 outline-none text-sm rounded-[7px] h-8 px-2 shadow-sm"
+                    className="bg-white text-gray-600 border border-gray-300 outline-none text-xs rounded-[7px] h-8 px-2 shadow-sm"
                   >
                     <option value="All">All</option>
                     <option value="pending">Pending</option>
@@ -466,18 +490,24 @@ const Donor = () => {
                               {request.name.charAt(0).toUpperCase() +
                                 request.name.slice(1).toLowerCase()}
                             </p>
+                            <span
+                              className={`text-[10px] ml-3 font-medium ${request.status === "pending"
+                                ? "text-yellow-600 bg-yellow-100 border border-yellow-500 px-2 py-0.5 rounded-[5px]"
+                                : request.status === "accepted"
+                                  ? "text-green-600 bg-green-100 border border-green-500 px-2 py-0.5 rounded-[5px]"
+                                  : "text-red-500 bg-red-100 border border-red-500 px-2 py-0.5 rounded-[5px]"
+                                }`}
+                            >
+                              {request.status.charAt(0).toUpperCase() +
+                                request.status.slice(1).toLowerCase()}
+                            </span>
                           </h1>
-                          <span
-                            className={`text-[10px] ml-3 font-medium ${request.status === "pending"
-                              ? "text-yellow-500 bg-yellow-100 border border-yellow-500 px-2 py-0.5 rounded-[5px]"
-                              : request.status === "approved"
-                                ? "text-green-500 bg-green-100 border border-green-500 px-2 py-0.5 rounded-[5px]"
-                                : "text-red-500 bg-red-100 border border-red-500 px-2 py-0.5 rounded-[5px]"
-                              }`}
-                          >
-                            {request.status.charAt(0).toUpperCase() +
-                              request.status.slice(1).toLowerCase()}
-                          </span>
+                          <div className="flex gap-2">
+                            <button disabled={request.status === "accepted"} onClick={() => updateRequest(request._id, request.donationId, request.receiverId, "accepted")}
+                              className={`bg-green-600 text-green-100 py-1 px-3 ${request.status === "rejected" ? "hidden" : ""} text-xs rounded-[4px] ${request.status === "accepted" ? "bg-green-100 text-green-600  border-green-700 cursor-not-allowed" : ""}`}> {request.status === "accepted" ? "Accepted" : "Accept"}</button>
+                            <button disabled={request.status === "accepted"} onClick={() => updateRequest(request._id, request.donationId, request.receiverId, "rejected")}
+                              className={`bg-red-600 text-red-100 ${request.status === "accepted" ? "hidden" : ""} py-1 px-3 text-xs rounded-[4px] ${request.status === "rejected" ? "bg-green-100 text-green-600  border-green-700 cursor-not-allowed" : ""}`}> {request.status === "rejected" ? "Rejected" : "Reject"}</button>
+                          </div>
                         </div>
                         <p className="text-xs text-gray-400 mt-1">
                           Requested On: &nbsp;
